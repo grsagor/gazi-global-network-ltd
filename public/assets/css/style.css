@@ -121,3 +121,8 @@
   text-align: center;
   margin-top: 1rem;
 }
+
+/* Sweet Alert */
+.swal2-container {
+  z-index: 9999;
+}
