@@ -16,15 +16,11 @@
 
 <!-- Main JS -->
 <script src="{{ asset('assets/js/main.js') }}"></script>
+<script src="{{ asset('assets/js/crud.js') }}"></script>
 
 @yield('js')
 
 <script>
-    // Toast.fire({
-    //     icon: "success",
-    //     title: "Signed in successfully"
-    // });
-
     function showToast(icon, title) {
         const Toast = Swal.mixin({
             toast: true,

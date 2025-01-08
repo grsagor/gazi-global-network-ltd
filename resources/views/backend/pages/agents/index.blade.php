@@ -1,13 +1,15 @@
 @extends('backend.layout.app')
 @section('content')
     <div class="card">
+        <input type="hidden" id="create_url" value="{{ route('admin.agents.create') }}">
+        <input type="hidden" id="store_url" value="{{ route('admin.agents.store') }}">
         <div class="datatable-header flex-column flex-md-row pb-0">
             <div class="head-label text-center">
                 <h5 class="card-title mb-0">DataTable with Buttons</h5>
             </div>
             <div class="dt-action-buttons text-end pt-6 pt-md-0">
                 <div class="dt-buttons btn-group flex-wrap">
-                    <button class="btn btn-secondary create-new btn-primary" type="button">
+                    <button id="create-btn" class="btn btn-secondary create-new btn-primary" type="button">
                         <span><i class="bx bx-plus bx-sm me-sm-2"></i>
                             <span class="d-none d-sm-inline-block">Add New Record</span>
                         </span>
@@ -15,7 +17,7 @@
                 </div>
             </div>
         </div>
-        <table id="example" class="display" style="width:100%">
+        <table id="datatable" class="display" style="width:100%">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -47,17 +49,12 @@
             </tbody>
         </table>
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="crudModal" tabindex="-1" aria-labelledby="crudModalLabel" aria-hidden="true">
+
+    </div>
 @endsection
 
 @section('js')
-    <script>
-        $(document).ready(function() {
-            $('#example').DataTable({
-                paging: true,
-                searching: true,
-                ordering: true,
-                info: true
-            });
-        });
-    </script>
 @endsection

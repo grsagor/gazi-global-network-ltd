@@ -126,3 +126,31 @@
 .swal2-container {
   z-index: 9999;
 }
+
+/* Datatable */
+
+.datatable-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px;
+  margin-bottom: 32px;
+}
+.dataTables_wrapper {
+  padding: 0 24px;
+}
+div.dataTables_wrapper div.dataTables_length label {
+  font-weight: normal;
+  text-align: left;
+  white-space: nowrap;
+}
+.dataTables_wrapper .dataTables_length select {
+  margin-left: .5rem;
+  margin-right: .5rem;
+  width: auto;
+  display: inline-block;
+  border-color: #7a838b !important;
+  background-clip: padding-box;
+  padding: calc(.543rem - var(--bs-border-width)) calc(.9375rem - var(--bs-border-width)) !important;
+  padding-inline-end: calc(2.8125rem - var(--bs-border-width));
+}
