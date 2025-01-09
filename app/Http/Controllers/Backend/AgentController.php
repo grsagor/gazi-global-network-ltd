@@ -26,7 +26,12 @@ class AgentController extends Controller
     public function list(Request $request, $role)
     {
         // return 'abc';
-        $data = User::where('role', $role)->get();
+        $query = User::query();
+        if (Auth::user()->role == 2) {
+            $sub_agent_ids = AgentSubagent::where('agent_id', Auth::user()->id)->pluck('sub_agent_id');
+            $query->whereIn('id', $sub_agent_ids);
+        }
+        $data = $query->where('role', $role)->get();
 
         return DataTables::of($data)
             ->editColumn('name', function ($row) {
@@ -61,10 +66,12 @@ class AgentController extends Controller
             'email' => 'required|email|unique:users,email',
             'phone' => 'required|string|max:15',
             'password' => 'required|string|min:6',
+            'rating' => 'required|string|max:11',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
         try {
             DB::beginTransaction();
+            $profileImagePath = '';
             if ($request->hasFile('profile_image')) {
                 $profileImage = $request->file('profile_image');
                 $destinationPath = public_path('uploads/users');
@@ -126,6 +133,7 @@ class AgentController extends Controller
             'email' => 'required|email|unique:users,email,' . $id,
             'phone' => 'required|string|max:15',
             'password' => 'nullable|string|min:6',
+            'rating' => 'nullable|string|min:11',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
     

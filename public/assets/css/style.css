@@ -3,10 +3,13 @@
 * File include item demo only specific css only
 ******************************************************************************/
 
-.menu .app-brand.demo {
+.app-brand {
+  width: 64px;
   height: 64px;
   margin-top: 12px;
   justify-content: center;
+  margin-right: auto;
+  margin-left: auto;
 }
 
 .app-brand-logo.demo svg {

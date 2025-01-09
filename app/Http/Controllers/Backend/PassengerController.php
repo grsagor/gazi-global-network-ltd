@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\AgentSubagent;
 use App\Models\Passenger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,7 +31,16 @@ class PassengerController extends Controller
 
     public function list(Request $request)
     {
-        $data = Passenger::all();
+        $user = Auth::user();
+        $query = Passenger::query();
+        if ($user->role == 2) {
+            $query->where('added_by', $user->id);
+        }
+        if ($user->role == 3) {
+            $agent_ids = AgentSubagent::where('sub_agent_id', $user->id)->pluck('agent_id');
+            $query->whereIn('added_by', $agent_ids);
+        }
+        $data = $query->get();
 
         return DataTables::of($data)
             ->editColumn('name', function ($row) {

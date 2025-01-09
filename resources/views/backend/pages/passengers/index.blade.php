@@ -12,15 +12,17 @@
             <div class="head-label text-center">
                 <h5 class="card-title mb-0">Passengers</h5>
             </div>
-            <div class="dt-action-buttons text-end pt-6 pt-md-0">
-                <div class="dt-buttons btn-group flex-wrap">
-                    <button id="crudCreateBtn" class="btn btn-secondary create-new btn-primary" type="button">
-                        <span><i class="bx bx-plus bx-sm me-sm-2"></i>
-                            <span class="d-none d-sm-inline-block">Add</span>
-                        </span>
-                    </button>
+            @if ($user_role != 3)
+                <div class="dt-action-buttons text-end pt-6 pt-md-0">
+                    <div class="dt-buttons btn-group flex-wrap">
+                        <button id="crudCreateBtn" class="btn btn-secondary create-new btn-primary" type="button">
+                            <span><i class="bx bx-plus bx-sm me-sm-2"></i>
+                                <span class="d-none d-sm-inline-block">Add</span>
+                            </span>
+                        </button>
+                    </div>
                 </div>
-            </div>
+            @endif
         </div>
         <table id="datatable" class="table table-hover" style="width:100%">
             <thead>
