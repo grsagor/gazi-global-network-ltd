@@ -7,6 +7,7 @@
     <title>Demo : Dashboard - Analytics | sneat - Bootstrap Dashboard PRO</title>
 
     <meta name="description" content="" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('assets/img/favicon/favicon.ico') }}" />
@@ -30,6 +31,7 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/apex-charts/apex-charts.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/sweetalert2/sweetalert2.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/datatable/jquery.dataTables.min.css') }}" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
 
     <!-- Page CSS -->
 

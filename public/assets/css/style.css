@@ -6,6 +6,7 @@
 .menu .app-brand.demo {
   height: 64px;
   margin-top: 12px;
+  justify-content: center;
 }
 
 .app-brand-logo.demo svg {
@@ -153,4 +154,16 @@ div.dataTables_wrapper div.dataTables_length label {
   background-clip: padding-box;
   padding: calc(.543rem - var(--bs-border-width)) calc(.9375rem - var(--bs-border-width)) !important;
   padding-inline-end: calc(2.8125rem - var(--bs-border-width));
+}
+@media print {
+  .layout-wrapper {
+      display: none !important; 
+  }
+
+  #print-content {
+      display: block !important; /* Only show #print-content */
+  }
+}
+.modal-footer {
+  gap: 12px;
 }

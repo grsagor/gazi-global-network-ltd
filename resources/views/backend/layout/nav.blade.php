@@ -15,7 +15,7 @@
             <li class="nav-item navbar-dropdown dropdown-user dropdown">
                 <a class="nav-link dropdown-toggle hide-arrow p-0" href="javascript:void(0);" data-bs-toggle="dropdown">
                     <div class="avatar avatar-online">
-                        <img src="../assets/img/avatars/1.png" alt class="w-px-40 h-auto rounded-circle" />
+                        <img src="{{ Auth::user()->profile_image ? asset(Auth::user()->profile_image) : asset('assets/img/logo.jpg') }}" alt class="w-px-40 h-auto rounded-circle" />
                     </div>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
@@ -24,7 +24,7 @@
                             <div class="d-flex">
                                 <div class="flex-shrink-0 me-3">
                                     <div class="avatar avatar-online">
-                                        <img src="../assets/img/avatars/1.png" alt
+                                        <img src="{{ Auth::user()->profile_image ? asset(Auth::user()->profile_image) : asset('assets/img/logo.jpg') }}" alt
                                             class="w-px-40 h-auto rounded-circle" />
                                     </div>
                                 </div>
@@ -38,11 +38,11 @@
                     <li>
                         <div class="dropdown-divider my-1"></div>
                     </li>
-                    {{-- <li>
-                        <a class="dropdown-item" href="#">
+                    <li>
+                        <a class="dropdown-item" href="{{ route('auth.my.profile') }}">
                             <i class="bx bx-user bx-md me-3"></i><span>My Profile</span>
                         </a>
-                    </li> --}}
+                    </li>
                     {{-- <li>
                         <a class="dropdown-item" href="#"> <i class="bx bx-cog bx-md me-3"></i><span>Settings</span> </a>
                     </li> --}}

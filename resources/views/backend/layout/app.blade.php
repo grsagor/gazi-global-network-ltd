@@ -31,6 +31,7 @@
     </div>
     <!-- / Layout wrapper -->
     @include('backend.layout.scripts')
+    {{-- <div id="print-content">hllo</div> --}}
 </body>
 
 </html>

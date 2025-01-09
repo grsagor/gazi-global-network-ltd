@@ -13,6 +13,8 @@
 <script src="{{ asset('assets/vendor/libs/apex-charts/apexcharts.js') }}"></script>
 <script src="{{ asset('assets/vendor/libs/sweetalert2/sweetalert2.min.js') }}"></script>
 <script src="{{ asset('assets/vendor/libs/datatable/jquery.dataTables.min.js') }}"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
 
 <!-- Main JS -->
 <script src="{{ asset('assets/js/main.js') }}"></script>
@@ -26,7 +28,7 @@
             toast: true,
             position: "top-end",
             showConfirmButton: false,
-            timer: 300000,
+            timer: 3000,
             timerProgressBar: true,
             didOpen: (toast) => {
                 toast.onmouseenter = Swal.stopTimer;
