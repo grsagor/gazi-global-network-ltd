@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Backend\AgentController;
 use App\Http\Controllers\Backend\DashboardController;
 use App\Http\Controllers\Backend\PassengerController;
+use App\Http\Controllers\Backend\RequiredDataController;
 use App\Http\Middleware\CheckLogin;
 use Illuminate\Support\Facades\Route;
 
@@ -49,6 +50,11 @@ Route::middleware('checkLogin')->group(function () {
             Route::post('/delete', 'delete')->name('admin.passengers.delete');
             Route::get('/{id}', 'details')->name('admin.passengers.details');
             Route::post('/status', 'status')->name('admin.agents.status');
+        });
+        Route::prefix('required-data')->controller(RequiredDataController::class)->group(function () {
+            Route::get('/{passenger_id}', 'passengerRequireData')->name('admin.required_data.single.passenger');
+            Route::post('/new/{passenger_id}', 'passengerRequireDataNew')->name('admin.required_data.single.passenger.new');
+            Route::post('/submit/{data_id}', 'passengerRequireDataSubmit')->name('admin.required_data.single.passenger.submit');
         });
     });
 });

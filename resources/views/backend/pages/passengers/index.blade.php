@@ -49,7 +49,8 @@
                 </select>
             </div>
         </div>
-        <div class="d-flex justify-content-end">
+        <div class="d-flex justify-content-end gap-2">
+            <button type="button" class="btn btn-danger" id="clear_btn">Clear</button>
             <button type="button" class="btn btn-primary" id="filter_btn">Filter</button>
         </div>
     </div>
@@ -160,6 +161,17 @@
                 }
                 initializeDatatable(data);
             })
+        });
+
+        $('#clear_btn').click(function() {
+            $('#filter_name').val('');
+            $('#filter_passport').val('');
+            $('#filter_country').val('');
+            $('#filter_company_name').val('');
+            $('#filter_agent_name').val('');
+            $('#filter_agent_id').val('');
+            $('#filter_status').val('');
+            initializeDatatable();
         })
 
         // const exportOptions = {

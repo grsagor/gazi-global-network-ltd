@@ -107,6 +107,7 @@ class PassengerController extends Controller
             
             ->addColumn('action', function ($row) {
                 $html = '<div class="d-flex flex-wrap gap-2">';
+                $html .= '<a href="'.route('admin.required_data.single.passenger', ['passenger_id' => $row->id]).'" class="btn btn-sm btn-info">Data</a>';
                 $html .= '<button type="button" data-id="'.$row->id.'" class="btn btn-sm btn-success crudPrintBtn">Print</button>';
                 $html .= '<button type="button" data-id="'.$row->id.'" class="btn btn-sm btn-primary crudEditBtn">Edit</button>';
                 $html .= '<button type="button" data-id="'.$row->id.'" class="btn btn-sm btn-danger crudDeleteBtn">Delete</button>';
