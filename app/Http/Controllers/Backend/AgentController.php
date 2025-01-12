@@ -18,7 +18,7 @@ class AgentController extends Controller
     {
         if ($role == 'agent') {
             $role = 2;
-        } elseif($role == 'sub-agent') {
+        } elseif ($role == 'sub-agent') {
             $role = 3;
         }
         return view('backend.pages.agents.index', compact('role'));
@@ -35,16 +35,24 @@ class AgentController extends Controller
 
         return DataTables::of($data)
             ->editColumn('name', function ($row) {
-                return $row->first_name . ' ' . $row->last_name;
+                $html = '';
+                $html .= '<a href="">'.$row->first_name . ' ' . $row->last_name.'</a>';
+                return $html;
             })
-            ->addColumn('action', function ($row) {
-                $html = '<div class="d-flex gap-2">';
-                $html .= '<button type="button" data-id="'.$row->id.'" class="btn btn-sm btn-primary crudEditBtn">Edit</a>';
-                $html .= '<button type="button" data-id="'.$row->id.'" class="btn btn-sm btn-danger crudDeleteBtn">Delete</a>';
+            ->editColumn('status', function ($row) {
+                $html = '<div>';
+                $html .= '<input data-id="' . $row->id . '" class="bootstrap4-toggle crudStatusBtn" type="checkbox" ' . ($row->status ? 'checked' : '') . ' data-toggle="toggle" data-on="Activated" data-off="Deactivated" data-onstyle="success" data-offstyle="danger" data-size="xs">';
                 $html .= '</div>';
                 return $html;
             })
-            ->rawColumns(['action']) // Allow HTML in action column
+            ->addColumn('action', function ($row) {
+                $html = '<div class="d-flex gap-2">';
+                $html .= '<button type="button" data-id="' . $row->id . '" class="btn btn-sm btn-primary crudEditBtn">Edit</a>';
+                $html .= '<button type="button" data-id="' . $row->id . '" class="btn btn-sm btn-danger crudDeleteBtn">Delete</a>';
+                $html .= '</div>';
+                return $html;
+            })
+            ->rawColumns(['action', 'status', 'name']) // Allow HTML in action column
             ->make(true);
     }
     public function create($role)
@@ -90,16 +98,16 @@ class AgentController extends Controller
             $user->password = Hash::make($validated['password']);
             $user->profile_image = $profileImagePath;
             $user->status = $request->status;
-            $user->father_name = $request->father_name; 
-            $user->nid = $request->nid; 
-            $user->passport = $request->passport; 
-            $user->company = $request->company; 
-            $user->category = $request->category; 
-            $user->rating = $request->rating; 
-            $user->note = $request->note; 
+            $user->father_name = $request->father_name;
+            $user->nid = $request->nid;
+            $user->passport = $request->passport;
+            $user->company = $request->company;
+            $user->category = $request->category;
+            $user->rating = $request->rating;
+            $user->note = $request->note;
             $user->save();
 
-            if($request->agent_id) {   
+            if ($request->agent_id) {
                 $agent_subagent = new AgentSubagent();
                 $agent_subagent->agent_id = $request->agent_id;
                 $agent_subagent->sub_agent_id = $user->id;
@@ -136,12 +144,12 @@ class AgentController extends Controller
             'rating' => 'nullable|string|min:11',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-    
+
         try {
             DB::beginTransaction();
             // Find the user by ID
             $user = User::findOrFail($id);
-    
+
             // Handle profile image upload if present
             if ($request->hasFile('profile_image')) {
                 $profileImage = $request->file('profile_image');
@@ -149,15 +157,15 @@ class AgentController extends Controller
                 $profileImageName = time() . '_' . $profileImage->getClientOriginalName();
                 $profileImage->move($destinationPath, $profileImageName);
                 $profileImagePath = 'uploads/users/' . $profileImageName;
-    
+
                 // Delete the old profile image if it exists
                 if ($user->profile_image && file_exists(public_path($user->profile_image))) {
                     unlink(public_path($user->profile_image));
                 }
-    
+
                 $user->profile_image = $profileImagePath;
             }
-    
+
             // Update user fields
             $user->first_name = $validated['first_name'];
             $user->last_name = $validated['last_name'];
@@ -167,16 +175,16 @@ class AgentController extends Controller
                 $user->password = Hash::make($validated['password']);
             }
             $user->status = $request->status;
-            $user->father_name = $request->father_name; 
-            $user->nid = $request->nid; 
-            $user->passport = $request->passport; 
-            $user->company = $request->company; 
-            $user->category = $request->category; 
-            $user->rating = $request->rating; 
+            $user->father_name = $request->father_name;
+            $user->nid = $request->nid;
+            $user->passport = $request->passport;
+            $user->company = $request->company;
+            $user->category = $request->category;
+            $user->rating = $request->rating;
             $user->note = $request->note;
             $user->save();
 
-            if($request->agent_id) {   
+            if ($request->agent_id) {
                 $agent_subagent = AgentSubagent::where('sub_agent_id', $user->id)->first();
                 $agent_subagent->delete();
 
@@ -186,14 +194,14 @@ class AgentController extends Controller
                 $agent_subagent->save();
             }
             DB::commit();
-    
+
             return response()->json(['success' => true, 'msg' => 'User updated successfully']);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['success' => false, 'msg' => $e->getMessage()], 500);
         }
     }
-    
+
     public function delete(Request $request)
     {
         try {
@@ -211,4 +219,38 @@ class AgentController extends Controller
             return response()->json(['success' => false, 'msg' => $th->getMessage()], 500);
         }
     }
+    public function status(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer|exists:users,id'
+        ]);
+    
+        try {
+            DB::beginTransaction();
+    
+            // Find the agent
+            $agent = User::find($request->id);
+            if (!$agent) {
+                return response()->json(['success' => false, 'msg' => 'Agent not found'], 404);
+            }
+    
+            // Toggle the status
+            $new_status = $agent->status == 1 ? 0 : 1;
+            $agent->status = $new_status;
+            $agent->save();
+    
+            // Update sub-agents' status if applicable
+            if ($new_status == 0) {
+                $sub_agent_ids = AgentSubagent::where('agent_id', $request->id)->pluck('sub_agent_id');
+                User::whereIn('id', $sub_agent_ids)->update(['status' => $new_status]);
+            }
+    
+            DB::commit();
+            return response()->json(['success' => true, 'msg' => 'Status updated successfully']);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'msg' => 'Failed to update status'], 500);
+        }
+    }
+    
 }

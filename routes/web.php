@@ -36,6 +36,7 @@ Route::middleware('checkLogin')->group(function () {
             Route::get('/edit/{role}', 'edit')->name('admin.agents.edit');
             Route::post('/update/{role}', 'update')->name('admin.agents.update');
             Route::post('/delete/{role}', 'delete')->name('admin.agents.delete');
+            Route::post('/status/{role}', 'status')->name('admin.agents.status');
         });
         Route::prefix('passengers')->controller(PassengerController::class)->group(function () {
             Route::get('/', 'index')->name('admin.passengers.index');
@@ -47,6 +48,7 @@ Route::middleware('checkLogin')->group(function () {
             Route::post('/update', 'update')->name('admin.passengers.update');
             Route::post('/delete', 'delete')->name('admin.passengers.delete');
             Route::get('/{id}', 'details')->name('admin.passengers.details');
+            Route::post('/status', 'status')->name('admin.agents.status');
         });
     });
 });

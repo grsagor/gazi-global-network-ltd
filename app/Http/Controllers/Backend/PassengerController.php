@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\Models\AgentSubagent;
 use App\Models\Passenger;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 
 class PassengerController extends Controller
@@ -34,34 +36,92 @@ class PassengerController extends Controller
         $user = Auth::user();
         $query = Passenger::query();
         if ($user->role == 2) {
-            $query->where('added_by', $user->id);
+            $query->where('agent_id', $user->id);
         }
         if ($user->role == 3) {
             $agent_ids = AgentSubagent::where('sub_agent_id', $user->id)->pluck('agent_id');
-            $query->whereIn('added_by', $agent_ids);
+            $query->whereIn('agent_id', $agent_ids);
         }
+
+        if ($request->name) {
+            $query->where('name', 'like', '%' . $request->name . '%');
+        }
+        
+        if ($request->passport_no) {
+            $query->where('passport_no', $request->passport_no);
+        }
+        
+        if ($request->designated_country_name) {
+            $query->where('designated_country_name', $request->designated_country_name);
+        }
+        
+        if ($request->company_name) {
+            $query->where('company_name', $request->company_name);
+        }
+        
+        if ($request->agent_name) {
+            $query->whereHas('agent', function ($agent) use ($request) {
+                $agent->where(DB::raw("CONCAT(first_name, ' ', last_name)"), 'like', '%' . $request->agent_name . '%');
+            });
+        }
+        
+        if ($request->agent_id) {
+            $query->where('agent_id', $request->agent_id);
+        }
+        
+        if ($request->status) {
+            $query->where('status', $request->status);
+        }
+        
+
         $data = $query->get();
 
         return DataTables::of($data)
             ->editColumn('name', function ($row) {
-                return $row->name;
+                $html = '';
+                $html .= '<a href="'.route('admin.passengers.details', ['id' => $row->id]).'" data-id="'.$row->id.'">'.$row->name.'</a>';
+                return $html;
             })
+            ->addColumn('agent_name', function ($row) {
+                return $row->agent->first_name . ' ' . $row->agent->last_name;
+            })
+            ->editColumn('status', function ($row) {
+                $html = '';
+                $html .= '<select data-id="'.$row->id.'" style="width: 223px;" class="form-select crudStatusBtn" aria-label="Default select example">';
+                $html .= '<option ' . ($row->status == 1 ? "selected" : '') . ' value="1">Request for onlist</option>';
+                $html .= '<option ' . ($row->status == 2 ? "selected" : '') . ' value="2">Onlisted</option>';
+                $html .= '<option ' . ($row->status == 3 ? "selected" : '') . ' value="3">Not submitted</option>';
+                $html .= '<option ' . ($row->status == 4 ? "selected" : '') . ' value="4">Submitted</option>';
+                $html .= '<option ' . ($row->status == 5 ? "selected" : '') . ' value="5">Pending</option>';
+                $html .= '<option ' . ($row->status == 6 ? "selected" : '') . ' value="6">Ready for submission</option>';
+                $html .= '<option ' . ($row->status == 7 ? "selected" : '') . ' value="7">Additional docs require</option>';
+                $html .= '<option ' . ($row->status == 8 ? "selected" : '') . ' value="8">Hold</option>';
+                $html .= '<option ' . ($row->status == 9 ? "selected" : '') . ' value="9">Permit</option>';
+                $html .= '<option ' . ($row->status == 10 ? "selected" : '') . ' value="10">Stamping done</option>';
+                $html .= '<option ' . ($row->status == 11 ? "selected" : '') . ' value="11">Rejected</option>';
+                $html .= '<option ' . ($row->status == 12 ? "selected" : '') . ' value="12">Resubmit</option>';
+                $html .= '<option ' . ($row->status == 13 ? "selected" : '') . ' value="13">Return</option>';
+                $html .= '</select>';
+                return $html;
+            })
+            
             ->addColumn('action', function ($row) {
                 $html = '<div class="d-flex flex-wrap gap-2">';
-                $html .= '<a href="'.route('admin.passengers.details', ['id' => $row->id]).'" data-id="'.$row->id.'" class="btn btn-sm btn-secondary">Details</a>';
                 $html .= '<button type="button" data-id="'.$row->id.'" class="btn btn-sm btn-success crudPrintBtn">Print</button>';
                 $html .= '<button type="button" data-id="'.$row->id.'" class="btn btn-sm btn-primary crudEditBtn">Edit</button>';
                 $html .= '<button type="button" data-id="'.$row->id.'" class="btn btn-sm btn-danger crudDeleteBtn">Delete</button>';
                 $html .= '</div>';
                 return $html;
             })
-            ->rawColumns(['action'])
+            ->rawColumns(['action', 'name', 'status'])
             ->make(true);
     }
 
     public function create()
     {
-        $html = view('backend.pages.passengers.create')->render();
+        $user = Auth::user();
+        $agents = User::where('role', 2)->get();
+        $html = view('backend.pages.passengers.create', compact('agents', 'user'))->render();
         return response()->json(['success' => true, 'html' => $html]);
     }
 
@@ -69,6 +129,7 @@ class PassengerController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'agent_id' => 'required',
             'father_name' => 'required|string|max:255',
             'nid_no' => 'nullable|string|max:20',
             'passport_no' => 'nullable|string|max:20',
@@ -93,7 +154,6 @@ class PassengerController extends Controller
 
         try {
             $passenger = new Passenger();
-            $passenger->added_by = Auth::user()->id;
             foreach ($validated as $key => $value) {
                 if ($request->hasFile($key)) {
                     $file = $request->file($key);
@@ -203,6 +263,18 @@ class PassengerController extends Controller
             $passenger->delete();
     
             return response()->json(['success' => true, 'msg' => 'Passenger deleted successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'msg' => $e->getMessage()], 500);
+        }
+    }
+    public function status(Request $request)
+    {
+        try {
+            $passenger = Passenger::findOrFail($request->id);
+            $passenger->status = $request->status;
+            $passenger->save();
+    
+            return response()->json(['success' => true, 'msg' => 'Status updated successfully']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'msg' => $e->getMessage()], 500);
         }

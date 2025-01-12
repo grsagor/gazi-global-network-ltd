@@ -7,6 +7,7 @@
         <input type="hidden" id="edit_url" value="{{ route('admin.agents.edit', ['role' => $role]) }}">
         <input type="hidden" id="update_url" value="{{ route('admin.agents.update', ['role' => $role]) }}">
         <input type="hidden" id="delete_url" value="{{ route('admin.agents.delete', ['role' => $role]) }}">
+        <input type="hidden" id="status_url" value="{{ route('admin.agents.status', ['role' => $role]) }}">
         <div class="datatable-header flex-column flex-md-row pb-0">
             <div class="head-label text-center">
                 <h5 class="card-title mb-0">
@@ -29,6 +30,7 @@
                 <tr>
                     <th>Name</th>
                     <th>Email</th>
+                    <th>Status</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -50,6 +52,10 @@
             {
                 data: 'email',
                 name: 'email'
+            },
+            {
+                data: 'status',
+                name: 'status'
             },
             {
                 data: 'action',

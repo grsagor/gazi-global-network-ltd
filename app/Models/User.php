@@ -12,6 +12,15 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
+    public $incrementing = false;
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($passenger) {
+            $passenger->id = mt_rand(1000, 9999);
+        });
+    }
+    
     /**
      * The attributes that are mass assignable.
      *
@@ -21,6 +30,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'status',
     ];
 
     /**

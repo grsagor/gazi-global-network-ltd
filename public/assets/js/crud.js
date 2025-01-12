@@ -1,11 +1,16 @@
-$(document).ready(function () {
+function initializeDatatable(data) {
     const url = $('#list_url').val();
+    if ($.fn.DataTable.isDataTable('#datatable')) {
+        $('#datatable').DataTable().destroy();
+    }
+
     $('#datatable').DataTable({
         processing: true,
         serverSide: true,
         ajax: {
             url: url,
-            type: "GET"
+            type: "GET",
+            data: data
         },
         columns: columns,
         paging: true,
@@ -23,9 +28,12 @@ $(document).ready(function () {
                 exportOptions: typeof exportOptions !== 'undefined' && exportOptions ? exportOptions : {}
             }
         ]
+    }).on('draw', function () {
+        $('.bootstrap4-toggle').bootstrapToggle();
     });
-
-
+}
+$(document).ready(function () {
+    initializeDatatable();
     /* Create Functionality */
     $(document).on('click', '#crudCreateBtn', function () {
         const url = $('#create_url').val();
@@ -125,6 +133,27 @@ $(document).ready(function () {
                     }
                 } else {
                     console.error('Error saving user:', error);
+                }
+            }
+        });
+    });
+
+    /* Status Functionality */
+    $(document).on('change', '.crudStatusBtn', function () {
+        const url = $('#status_url').val();
+        const id = $(this).data('id');
+        const status = $(this).val();
+        console.log('id', id)
+        $.ajax({
+            url: url,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')  // CSRF token in header
+            },
+            type: 'POST',
+            data: {id, status},
+            success: function (response) {
+                if (response.success) {
+                    showToast('success', response.msg);
                 }
             }
         });

@@ -10,6 +10,7 @@
 <!-- endbuild -->
 
 <!-- Vendors JS -->
+<script src="{{ asset('assets/vendor/libs/bootstrap4-toggle/js/bootstrap4-toggle.min.js') }}"></script>
 <script src="{{ asset('assets/vendor/libs/apex-charts/apexcharts.js') }}"></script>
 <script src="{{ asset('assets/vendor/libs/sweetalert2/sweetalert2.min.js') }}"></script>
 <script src="{{ asset('assets/vendor/libs/datatable/jquery.dataTables.min.js') }}"></script>
