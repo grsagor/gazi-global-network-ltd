@@ -1,5 +1,21 @@
 @extends('auth.layout.app')
 @section('content')
+@if ($errors->any())
+    {{-- <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $key => $error)
+                <li><strong>{{ $key }}:</strong> {{ $error }}</li>
+            @endforeach
+        </ul>
+    </div> --}}
+
+    <pre>
+        <?php
+            print_r($errors);
+            ?>
+    </pre>
+@endif
+
     <div class="container-xxl">
         <div class="authentication-wrapper authentication-basic container-p-y">
             <div class="authentication-inner">

@@ -1,14 +1,21 @@
 @extends('backend.layout.app')
 @section('content')
-@if ($errors->any())
-    <div class="alert alert-danger">
+    @if ($errors->any())
+        {{-- <div class="alert alert-danger">
         <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
+            @foreach ($errors->all() as $key => $error)
+                <li><strong>{{ $key }}:</strong> {{ $error }}</li>
             @endforeach
         </ul>
-    </div>
-@endif
+    </div> --}}
+
+        {{-- <pre>
+        <?php
+        print_r($errors);
+        ?>
+    </pre> --}}
+    @endif
+
 
     <div class="card p-5 mb-3">
         <div class="head-label">
@@ -17,12 +24,38 @@
         <div>
             @foreach ($required_data as $index => $item)
                 <p><strong>{{ $index + 1 }}: </strong>{{ $item->required_text }}</p>
+                <div class="submitted-info-container">
+                    @if ($item->submitted_text)
+                        <p class="submitted-text"><strong>Submitted Text:</strong> {{ $item->submitted_text }}</p>
+                    @endif
+                    @if ($item->submitted_files)
+                        <div class="flex mb-3">
+                            @foreach ($item->submitted_files as $file)
+                                @if (strpos($file->type, 'image') !== false)
+                                    <a href="{{ asset($file->path) }}" target="_blank">
+                                        <img class="submitted-image" src="{{ asset($file->path) }}" alt="">
+                                    </a>
+                                @endif
+                            @endforeach
+                        </div>
+                        <div class="d-flex flex-column">
+                            @foreach ($item->submitted_files as $file)
+                                @if (strpos($file->type, 'image') === false)
+                                    <a href="{{ asset($file->path) }}" target="_blank">
+                                        {{ $file->file_name }}
+                                    </a>
+                                @endif
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
                 <form action="{{ route('admin.required_data.single.passenger.submit', ['data_id' => $item->id]) }}"
                     method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="mb-3">
                         <label for="submitted_text_{{ $index }}" class="form-label">What to say?</label>
-                        <input type="text" class="form-control @error('submitted_text_' . $item->id) is-invalid @enderror"
+                        <input type="text"
+                            class="form-control @error('submitted_text_' . $item->id) is-invalid @enderror"
                             id="submitted_text_{{ $index }}" name="submitted_text_{{ $item->id }}"
                             placeholder="Enter what to say" required>
                         @error('submitted_text_' . $item->id)
@@ -32,16 +65,26 @@
                         @enderror
                     </div>
                     <div class="mb-3">
+                        <?php
+                        $has_file_error = false;
+                        ?>
+                        @foreach (array_keys($errors->getMessages()) as $errorKey)
+                            @if (str_contains($errorKey, 'submitted_files_' . $item->id))
+                                <?php
+                                $has_file_error = true;
+                                ?>
+                            @endif
+                        @endforeach
                         <label for="submitted_files_{{ $index }}" class="form-label">Upload Files</label>
                         <input type="file"
                             class="form-control @error('submitted_files_' . $item->id) is-invalid @enderror"
                             id="submitted_files_{{ $index }}" name="submitted_files_{{ $item->id }}[]" required
                             multiple>
-                        @error('submitted_files_' . $item->id)
+                        @if ($has_file_error)
                             <div class="invalid-feedback">
-                                {{ $message }}
+                                {{ $errors->first($errorKey) }}
                             </div>
-                        @enderror
+                        @endif
                     </div>
                     <div>
                         <button type="submit" class="btn btn-primary btn-sm">Submit</button>
