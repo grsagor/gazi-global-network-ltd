@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Backend\AccountController;
 use App\Http\Controllers\Backend\AgentController;
 use App\Http\Controllers\Backend\DashboardController;
 use App\Http\Controllers\Backend\PassengerController;
@@ -27,6 +28,8 @@ Route::middleware('checkLogin')->group(function () {
     Route::prefix('admin')->group(function () {
         Route::prefix('dashboard')->controller(DashboardController::class)->group(function () {
             Route::get('/', 'index')->name('admin.dashboard.index');
+            Route::get('/paid/list', 'paidList')->name('admin.dashboard.paid.list');
+            Route::get('/unpaid/list', 'unpaidList')->name('admin.dashboard.unpaid.list');
             Route::get('/datatable', 'datatable')->name('admin.dashboard.datatable');
         });
         Route::prefix('users')->controller(AgentController::class)->group(function () {
@@ -38,6 +41,7 @@ Route::middleware('checkLogin')->group(function () {
             Route::post('/update/{role}', 'update')->name('admin.agents.update');
             Route::post('/delete/{role}', 'delete')->name('admin.agents.delete');
             Route::post('/status/{role}', 'status')->name('admin.agents.status');
+            Route::get('/details/{id}', 'details')->name('admin.agents.details');
         });
         Route::prefix('passengers')->controller(PassengerController::class)->group(function () {
             Route::get('/', 'index')->name('admin.passengers.index');
@@ -55,6 +59,14 @@ Route::middleware('checkLogin')->group(function () {
             Route::get('/{passenger_id}', 'passengerRequireData')->name('admin.required_data.single.passenger');
             Route::post('/new/{passenger_id}', 'passengerRequireDataNew')->name('admin.required_data.single.passenger.new');
             Route::post('/submit/{data_id}', 'passengerRequireDataSubmit')->name('admin.required_data.single.passenger.submit');
+        });
+
+        Route::prefix('accounts')->controller(AccountController::class)->group(function () {
+            Route::get('', 'index')->name('admin.accounts.index');
+            Route::get('/list', 'list')->name('admin.accounts.list');
+            Route::get('/agent/list', 'agentList')->name('admin.accounts.agent.list');
+            Route::get('/agent/{id}', 'agentDetails')->name('admin.accounts.agent.details');
+            Route::get('/print', 'agentPrint')->name('admin.accounts.agent.print');
         });
     });
 });

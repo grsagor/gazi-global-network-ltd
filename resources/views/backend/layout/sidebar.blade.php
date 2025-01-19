@@ -56,6 +56,12 @@
                 <div class="text-truncate" data-i18n="Email">Passengers</div>
             </a>
         </li>
+        <li class="menu-item {{ request()->routeIs('admin.accounts.index') ? 'active' : '' }}">
+            <a href="{{ route('admin.accounts.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-home-smile"></i>
+                <div class="text-truncate" data-i18n="Email">Accounts</div>
+            </a>
+        </li>
     </ul>
 </aside>
 <!-- / Menu -->

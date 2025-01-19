@@ -125,6 +125,14 @@
                         value="{{ old('discount_amount', $passenger->discount_amount) }}"
                         placeholder="Enter Discount Amount" required>
                 </div>
+                @if ($passenger->status == 13)
+                <div class="mb-3">
+                    <label for="return_amount" class="form-label">Return Amount</label>
+                    <input type="number" class="form-control" id="return_amount" name="return_amount"
+                        value="{{ old('return_amount', $passenger->return_amount) }}"
+                        placeholder="Enter Return Amount" required>
+                </div>
+                @endif
                 <div class="mb-3">
                     <label for="image_upload" class="form-label">Image Upload</label>
                     <input type="file" class="form-control" id="image_upload" name="image_upload"

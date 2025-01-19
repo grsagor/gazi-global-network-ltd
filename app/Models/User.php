@@ -55,4 +55,11 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function agent_id() {
+        $sub_agent_id = $this->id;
+        $record = AgentSubagent::where('sub_agent_id', $sub_agent_id)->first();
+        return $record ? $record->agent_id : null;
+    }
+    
 }

@@ -1,5 +1,36 @@
 @extends('backend.layout.app')
 @section('content')
+    <div class="card mb-5 p-5">
+        <div class="head-label">
+            <h5 class="card-title mb-0">Filter</h5>
+        </div>
+        <div class="row">
+            <div class="mb-3 col-3">
+                <label for="filter_name" class="form-label">Name</label>
+                <input type="text" class="form-control" id="filter_name" placeholder="Name">
+            </div>
+            <div class="mb-3 col-3">
+                <label for="filter_passport" class="form-label">Passport No.</label>
+                <input type="text" class="form-control" id="filter_passport" placeholder="Passport No.">
+            </div>
+            <div class="mb-3 col-3">
+                <label for="filter_company_name" class="form-label">Company Name</label>
+                <input type="text" class="form-control" id="filter_company_name" placeholder="Company Name">
+            </div>
+            <div class="mb-3 col-3">
+                <label for="filter_agent_id" class="form-label">AgentID</label>
+                <input type="text" class="form-control" id="filter_id" placeholder="AgentID">
+            </div>
+            <div class="mb-3 col-3">
+                <label for="filter_nid" class="form-label">NID</label>
+                <input type="text" class="form-control" id="filter_nid" placeholder="NID">
+            </div>
+        </div>
+        <div class="d-flex justify-content-end gap-2">
+            <button type="button" class="btn btn-danger" id="clear_btn">Clear</button>
+            <button type="button" class="btn btn-primary" id="filter_btn">Filter</button>
+        </div>
+    </div>
     <div class="card">
         <input type="hidden" id="create_url" value="{{ route('admin.agents.create', ['role' => $role]) }}">
         <input type="hidden" id="store_url" value="{{ route('admin.agents.store', ['role' => $role]) }}">
@@ -29,7 +60,10 @@
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Email</th>
+                    <th>Passport</th>
+                    <th>Company Name</th>
+                    <th>AgentID</th>
+                    <th>NID</th>
                     <th>Status</th>
                     <th>Action</th>
                 </tr>
@@ -50,8 +84,20 @@
                 name: 'name'
             },
             {
-                data: 'email',
-                name: 'email'
+                data: 'passport',
+                name: 'passport'
+            },
+            {
+                data: 'company',
+                name: 'company'
+            },
+            {
+                data: 'id',
+                name: 'id'
+            },
+            {
+                data: 'nid',
+                name: 'nid'
             },
             {
                 data: 'status',
@@ -64,5 +110,35 @@
                 searchable: false
             } // Action buttons
         ]
+
+        $(document).ready(function() {
+            $('#filter_btn').click(function() {
+                const name = $('#filter_name').val();
+                const passport = $('#filter_passport').val();
+                const company = $('#filter_company_name').val();
+                const id = $('#filter_id').val();
+                const nid = $('#filter_nid').val();
+
+                const data = {
+                    name,
+                    passport,
+                    company,
+                    id,
+                    nid
+                }
+                initializeDatatable(data);
+            })
+        });
+
+        $('#clear_btn').click(function() {
+            $('#filter_name').val('');
+            $('#filter_passport').val('');
+            $('#filter_country').val('');
+            $('#filter_company_name').val('');
+            $('#filter_agent_name').val('');
+            $('#filter_id').val('');
+            $('#filter_nid').val('');
+            initializeDatatable();
+        })
     </script>
 @endsection

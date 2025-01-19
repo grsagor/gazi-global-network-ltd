@@ -30,7 +30,7 @@
                 <input type="text" class="form-control" id="filter_agent_id" placeholder="AgentID">
             </div>
             <div class="mb-3 col-3">
-                <label for="filter_status" class="form-label">AgentID</label>
+                <label for="filter_status" class="form-label">Status</label>
                 <select class="form-select" id="filter_status">
                     <option value="">Select</option>
                     <option value="1">Request for onlist</option>

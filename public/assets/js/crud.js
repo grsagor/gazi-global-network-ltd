@@ -4,33 +4,37 @@ function initializeDatatable(data) {
         $('#datatable').DataTable().destroy();
     }
 
-    $('#datatable').DataTable({
-        processing: true,
-        serverSide: true,
-        ajax: {
-            url: url,
-            type: "GET",
-            data: data
-        },
-        columns: columns,
-        paging: true,
-        searching: true,
-        ordering: true,
-        info: true,
-        lengthMenu: [10, 25, 50, 100], // Define the "per page" options
-        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-end"Bf>>' + // Buttons next to search box
-            'rtip', // Buttons, table (t), pagination (p), info (i)
-        buttons: [
-            {
-                extend: 'csv',
-                text: 'Export CSV', // Button text
-                className: 'btn btn-primary', // Add a custom class for styling
-                exportOptions: typeof exportOptions !== 'undefined' && exportOptions ? exportOptions : {}
-            }
-        ]
-    }).on('draw', function () {
-        $('.bootstrap4-toggle').bootstrapToggle();
-    });
+    try {
+        $('#datatable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: url,
+                type: "GET",
+                data: data
+            },
+            columns: columns,
+            paging: true,
+            searching: true,
+            ordering: true,
+            info: true,
+            lengthMenu: [10, 25, 50, 100], // Define the "per page" options
+            dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-end"Bf>>' + // Buttons next to search box
+                'rtip', // Buttons, table (t), pagination (p), info (i)
+            buttons: [
+                {
+                    extend: 'csv',
+                    text: 'Export CSV', // Button text
+                    className: 'btn btn-primary', // Add a custom class for styling
+                    exportOptions: typeof exportOptions !== 'undefined' && exportOptions ? exportOptions : {}
+                }
+            ]
+        }).on('draw', function () {
+            $('.bootstrap4-toggle').bootstrapToggle();
+        });
+    } catch (error) {
+        console.log('error', error)
+    }
 }
 $(document).ready(function () {
     initializeDatatable();

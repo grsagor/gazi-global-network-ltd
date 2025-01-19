@@ -68,6 +68,10 @@ class PassengerController extends Controller
         if ($request->agent_id) {
             $query->where('agent_id', $request->agent_id);
         }
+        if ($request->subagent_id) {
+            $sub_agent = User::find($request->subagent_id);
+            $query->where('agent_id', $sub_agent->agent_id());
+        }
         
         if ($request->status) {
             $query->where('status', $request->status);
@@ -203,6 +207,7 @@ class PassengerController extends Controller
             'deposit_amount' => 'nullable|numeric',
             'due_amount' => 'nullable|numeric',
             'discount_amount' => 'nullable|numeric',
+            'return_amount' => 'nullable|numeric',
             'image_upload' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
             'pdf_upload' => 'nullable|file|mimes:pdf|max:2048',
             'payment_doc_upload' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048',

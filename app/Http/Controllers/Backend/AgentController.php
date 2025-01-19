@@ -23,6 +23,11 @@ class AgentController extends Controller
         }
         return view('backend.pages.agents.index', compact('role'));
     }
+    public function details($id)
+    {
+        $agent = User::find($id);
+        return view('backend.pages.agents.details', compact('agent'));
+    }
     public function list(Request $request, $role)
     {
         // return 'abc';
@@ -31,12 +36,33 @@ class AgentController extends Controller
             $sub_agent_ids = AgentSubagent::where('agent_id', Auth::user()->id)->pluck('sub_agent_id');
             $query->whereIn('id', $sub_agent_ids);
         }
+        
+        if ($request->name) {
+            $query->where(DB::raw("CONCAT(first_name, ' ', last_name)"), 'like', '%' . $request->name . '%');
+        }
+
+        if ($request->passport) {
+            $query->where('passport', $request->passport);
+        }
+        
+        if ($request->company) {
+            $query->where('company', $request->company);
+        }
+        
+        if ($request->id) {
+            $query->where('id', $request->id);
+        }
+        
+        if ($request->nid) {
+            $query->where('nid', $request->nid);
+        }
+
         $data = $query->where('role', $role)->get();
 
         return DataTables::of($data)
             ->editColumn('name', function ($row) {
                 $html = '';
-                $html .= '<a href="">'.$row->first_name . ' ' . $row->last_name.'</a>';
+                $html .= '<a href="'.route('admin.agents.details', ['id' => $row->id]).'">'.$row->first_name . ' ' . $row->last_name.'</a>';
                 return $html;
             })
             ->editColumn('status', function ($row) {
@@ -238,12 +264,6 @@ class AgentController extends Controller
             $new_status = $agent->status == 1 ? 0 : 1;
             $agent->status = $new_status;
             $agent->save();
-    
-            // Update sub-agents' status if applicable
-            if ($new_status == 0) {
-                $sub_agent_ids = AgentSubagent::where('agent_id', $request->id)->pluck('sub_agent_id');
-                User::whereIn('id', $sub_agent_ids)->update(['status' => $new_status]);
-            }
     
             DB::commit();
             return response()->json(['success' => true, 'msg' => 'Status updated successfully']);
