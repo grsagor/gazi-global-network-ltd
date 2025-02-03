@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Country;
 use App\Models\Passenger;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -13,102 +14,109 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $agents = User::select('users.id', 'users.first_name', DB::raw('COALESCE(SUM(passengers.deposit_amount), 0) as total_deposit'))
-            ->leftJoin('passengers', 'users.id', '=', 'passengers.agent_id') // Join passengers with users
-            ->where('users.role', 2) // Filter by role (2 for agents)
-            ->groupBy('users.id', 'users.first_name') // Group by agent ID and name
-            ->orderByDesc('total_deposit') // Sort by total deposit in descending order
-            ->limit(5) // Limit to top 5
-            ->get();
-        // $agents = User::select('users.id', 'users.first_name', DB::raw('COALESCE(SUM(passengers.deposit_amount), 0) as total_deposit'))
-        //     ->leftJoin('passengers', 'users.id', '=', 'passengers.agent_id') // Join passengers with users
-        //     ->where('users.role', 2) // Filter by role (2 for agents)
-        //     ->groupBy('users.id', 'users.first_name') // Group by agent ID and name
-        //     ->orderBy('total_deposit') // Sort by total deposit in descending order
-        //     ->limit(5) // Limit to top 5
-        //     ->get();
+        $country_ids = Passenger::distinct()->pluck('country_id');
+        $countries = [];
+        foreach ($country_ids as $country_id) {
+            $country_name = Country::find($country_id)->name;
+            $total_passengers = Passenger::where('country_id', $country_id)->count();
+            $request_onlisted_passengers = Passenger::where([['status', 1], ['country_id', $country_id]])->count();
+            $onlisted_passengers = Passenger::where([['status', 2], ['country_id', $country_id]])->count();
+            $not_submitted_passengers = Passenger::where([['status', 3], ['country_id', $country_id]])->count();
+            $submitted_passengers = Passenger::where([['status', 4], ['country_id', $country_id]])->count();
+            $pending_passengers = Passenger::where([['status', 5], ['country_id', $country_id]])->count();
+            $ready_for_submission_passengers = Passenger::where([['status', 6], ['country_id', $country_id]])->count();
+            $additional_doc_required_passengers = Passenger::where([['status', 7], ['country_id', $country_id]])->count();
+            $hold_passengers = Passenger::where([['status', 8], ['country_id', $country_id]])->count();
+            $permit_passengers = Passenger::where([['status', 9], ['country_id', $country_id]])->count();
+            $stamping_done_passengers = Passenger::where([['status', 10], ['country_id', $country_id]])->count();
+            $rejected_passengers = Passenger::where([['status', 11], ['country_id', $country_id]])->count();
+            $resubumit_passengers = Passenger::where([['status', 12], ['country_id', $country_id]])->count();
+            $return_passengers = Passenger::where([['status', 13], ['country_id', $country_id]])->count();
 
-        return response()->json($agents);
-        $total_contact_amount = Passenger::sum('contact_amount');
-        $total_deposit_amount = Passenger::sum('deposit_amount');
-        $total_due_amount = Passenger::sum('due_amount');
-        $total_discount_amount = Passenger::sum('discount_amount');
+            $country = [
+                'country_namecountry_name' => $country_name,
+                'total_passengerstotal_passengers' => $total_passengers,
+                'request_onlisted_passengersrequest_onlisted_passengers' => $request_onlisted_passengers,
+                'onlisted_passengersonlisted_passengers' => $onlisted_passengers,
+                'not_submitted_passengersnot_submitted_passengers' => $not_submitted_passengers,
+                'submitted_passengerssubmitted_passengers' => $submitted_passengers,
+                'pending_passengerspending_passengers' => $pending_passengers,
+                'ready_for_submission_passengersready_for_submission_passengers' => $ready_for_submission_passengers,
+                'additional_doc_required_passengersadditional_doc_required_passengers' => $additional_doc_required_passengers,
+                'hold_passengershold_passengers' => $hold_passengers,
+                'permit_passengerspermit_passengers' => $permit_passengers,
+                'stamping_done_passengersstamping_done_passengers' => $stamping_done_passengers,
+                'rejected_passengersrejected_passengers' => $rejected_passengers,
+                'resubumit_passengersresubumit_passengers' => $resubumit_passengers,
+                'return_passengersreturn_passengers' => $return_passengers,
+            ];
+
+            $countries[] = $country;
+        }
+        // return $countries;
+        $total_passengers = Passenger::count();
+        $request_onlisted_passengers = Passenger::where('status', 1)->count();
+        $onlisted_passengers = Passenger::where('status', 2)->count();
+        $not_submitted_passengers = Passenger::where('status', 3)->count();
+        $submitted_passengers = Passenger::where('status', 4)->count();
+        $pending_passengers = Passenger::where('status', 5)->count();
+        $ready_for_submission_passengers = Passenger::where('status', 6)->count();
+        $additional_doc_required_passengers = Passenger::where('status', 7)->count();
+        $hold_passengers = Passenger::where('status', 8)->count();
+        $permit_passengers = Passenger::where('status', 9)->count();
+        $stamping_done_passengers = Passenger::where('status', 10)->count();
+        $rejected_passengers = Passenger::where('status', 11)->count();
+        $resubumit_passengers = Passenger::where('status', 12)->count();
+        $return_passengers = Passenger::where('status', 13)->count();
+
         $data = [
-            'total_contact_amount' => $total_contact_amount,
-            'total_deposit_amount' => $total_deposit_amount,
-            'total_due_amount' => $total_due_amount,
-            'total_discount_amount' => $total_discount_amount,
+            'total_passengers' => $total_passengers,
+            'request_onlisted_passengers' => $request_onlisted_passengers,
+            'onlisted_passengers' => $onlisted_passengers,
+            'not_submitted_passengers' => $not_submitted_passengers,
+            'submitted_passengers' => $submitted_passengers,
+            'pending_passengers' => $pending_passengers,
+            'ready_for_submission_passengers' => $ready_for_submission_passengers,
+            'additional_doc_required_passengers' => $additional_doc_required_passengers,
+            'hold_passengers' => $hold_passengers,
+            'permit_passengers' => $permit_passengers,
+            'stamping_done_passengers' => $stamping_done_passengers,
+            'rejected_passengers' => $rejected_passengers,
+            'resubumit_passengers' => $resubumit_passengers,
+            'return_passengers' => $return_passengers,
         ];
         return view('backend.pages.dashboard.index', $data);
     }
-    public function paidList(Request $request)
-    {
-        $query = User::query();
-        $query = $query->where('role', 2);
-        $data = $query->get();
-
-        return DataTables::of($data)
-            ->addColumn('name', function ($row) {
-                $html = '';
-                $html .= '<a href="' . route('admin.accounts.agent.details', ['id' => $row->id]) . '">' . $row->first_name . ' ' . $row->last_name . '</a>';
-                return $html;
-            })
-            ->addColumn('contact_amount', function ($row) {
-                $amount = Passenger::where('agent_id', $row->id)->sum('contact_amount');
-                return $amount;
-            })
-            ->addColumn('deposit_amount', function ($row) {
-                $amount = Passenger::where('agent_id', $row->id)->sum('deposit_amount');
-                return $amount;
-            })
-            ->addColumn('due_amount', function ($row) {
-                $amount = Passenger::where('agent_id', $row->id)->sum('due_amount');
-                return $amount;
-            })
-            ->addColumn('discount_amount', function ($row) {
-                $amount = Passenger::where('agent_id', $row->id)->sum('discount_amount');
-                return $amount;
-            })
-            ->addColumn('return_amount', function ($row) {
-                $amount = Passenger::where('agent_id', $row->id)->sum('return_amount');
-                return $amount;
-            })
-            ->rawColumns(['name'])
-            ->make(true);
-    }
-    public function unpaidList(Request $request)
-    {
-        $query = User::query();
-        $query = $query->where('role', 2);
-        $data = $query->get();
-
-        return DataTables::of($data)
-            ->addColumn('name', function ($row) {
-                $html = '';
-                $html .= '<a href="' . route('admin.accounts.agent.details', ['id' => $row->id]) . '">' . $row->first_name . ' ' . $row->last_name . '</a>';
-                return $html;
-            })
-            ->addColumn('contact_amount', function ($row) {
-                $amount = Passenger::where('agent_id', $row->id)->sum('contact_amount');
-                return $amount;
-            })
-            ->addColumn('deposit_amount', function ($row) {
-                $amount = Passenger::where('agent_id', $row->id)->sum('deposit_amount');
-                return $amount;
-            })
-            ->addColumn('due_amount', function ($row) {
-                $amount = Passenger::where('agent_id', $row->id)->sum('due_amount');
-                return $amount;
-            })
-            ->addColumn('discount_amount', function ($row) {
-                $amount = Passenger::where('agent_id', $row->id)->sum('discount_amount');
-                return $amount;
-            })
-            ->addColumn('return_amount', function ($row) {
-                $amount = Passenger::where('agent_id', $row->id)->sum('return_amount');
-                return $amount;
-            })
-            ->rawColumns(['name'])
-            ->make(true);
+    public function countriesList() {
+        $country_ids = Passenger::distinct()->pluck('country_id');
+        $countries = [];
+    
+        foreach ($country_ids as $country_id) {
+            $country = Country::find($country_id);
+    
+            if (!$country) {
+                continue; // Skip if country not found
+            }
+    
+            $countries[] = [
+                'country_name' => $country->name,
+                'total_passengers' => Passenger::where('country_id', $country_id)->count(),
+                'request_onlisted_passengers' => Passenger::where([['status', 1], ['country_id', $country_id]])->count(),
+                'onlisted_passengers' => Passenger::where([['status', 2], ['country_id', $country_id]])->count(),
+                'not_submitted_passengers' => Passenger::where([['status', 3], ['country_id', $country_id]])->count(),
+                'submitted_passengers' => Passenger::where([['status', 4], ['country_id', $country_id]])->count(),
+                'pending_passengers' => Passenger::where([['status', 5], ['country_id', $country_id]])->count(),
+                'ready_for_submission_passengers' => Passenger::where([['status', 6], ['country_id', $country_id]])->count(),
+                'additional_doc_required_passengers' => Passenger::where([['status', 7], ['country_id', $country_id]])->count(),
+                'hold_passengers' => Passenger::where([['status', 8], ['country_id', $country_id]])->count(),
+                'permit_passengers' => Passenger::where([['status', 9], ['country_id', $country_id]])->count(),
+                'stamping_done_passengers' => Passenger::where([['status', 10], ['country_id', $country_id]])->count(),
+                'rejected_passengers' => Passenger::where([['status', 11], ['country_id', $country_id]])->count(),
+                'resubmit_passengers' => Passenger::where([['status', 12], ['country_id', $country_id]])->count(),
+                'return_passengers' => Passenger::where([['status', 13], ['country_id', $country_id]])->count(),
+            ];
+        }
+    
+        return DataTables::of($countries)->toJson();
     }
 }

@@ -67,11 +67,13 @@
                     @endif
                 </div>
                 <div class="mb-3">
-                    <label for="designated_country_name" class="form-label">Designated Country Name</label>
-                    <input type="text" class="form-control" id="designated_country_name"
-                        name="designated_country_name"
-                        value="{{ old('designated_country_name', $passenger->designated_country_name) }}"
-                        placeholder="Enter Designated Country Name" required>
+                    <label for="country_id" class="form-label">Designated Country Name</label>
+                        <select class="form-select" id="country_id" name="country_id" required>
+                            <option value="" selected disabled>Choose...</option>
+                            @foreach ($countries as $country)
+                                <option {{ $passenger->country_id == $country->id ? 'selected' : '' }} value="{{ $country->id }}">{{ $country->name }}</option>
+                            @endforeach
+                        </select>
                 </div>
                 <div class="mb-3">
                     <label for="work_type" class="form-label">Work Type</label>
@@ -83,11 +85,6 @@
                     <input type="text" class="form-control" id="company_name" name="company_name"
                         value="{{ old('company_name', $passenger->company_name) }}" placeholder="Enter Company Name"
                         required>
-                </div>
-                <div class="mb-3">
-                    <label for="required_doc_name" class="form-label">Add Required Document Name (Remark)</label>
-                    <textarea class="form-control" id="required_doc_name" name="required_doc_name" placeholder="Enter Remarks"
-                        rows="3" required>{{ old('required_doc_name', $passenger->required_doc_name) }}</textarea>
                 </div>
                 <div class="mb-3">
                     <label for="application_status" class="form-label">Application Status</label>

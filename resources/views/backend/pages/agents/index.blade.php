@@ -59,10 +59,11 @@
         <table id="datatable" class="table table-hover" style="width:100%">
             <thead>
                 <tr>
+                    <th>SI</th>
                     <th>Name</th>
-                    <th>Passport</th>
-                    <th>Company Name</th>
                     <th>AgentID</th>
+                    <th>Company Name</th>
+                    <th>Passport</th>
                     <th>NID</th>
                     <th>Status</th>
                     <th>Action</th>
@@ -80,20 +81,29 @@
 @section('js')
     <script>
         const columns = [{
+                data: null,
+                name: 'index',
+                render: function(data, type, row, meta) {
+                    return meta.row + 1; // Generates 1, 2, 3, ...
+                },
+                orderable: false, // Index should not be sortable
+                searchable: false
+            },
+            {
                 data: 'name',
                 name: 'name'
             },
             {
-                data: 'passport',
-                name: 'passport'
+                data: 'id',
+                name: 'id'
             },
             {
                 data: 'company',
                 name: 'company'
             },
             {
-                data: 'id',
-                name: 'id'
+                data: 'passport',
+                name: 'passport'
             },
             {
                 data: 'nid',

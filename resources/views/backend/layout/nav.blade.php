@@ -29,8 +29,16 @@
                                     </div>
                                 </div>
                                 <div class="flex-grow-1">
-                                    <h6 class="mb-0">John Doe</h6>
-                                    <small class="text-muted">Admin</small>
+                                    <h6 class="mb-0">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</h6>
+                                    <small class="text-muted">
+                                        @if (Auth::user()->role == 1)
+                                            Admin
+                                        @elseif(Auth::user()->role == 2)
+                                            Agent
+                                        @else
+                                            Sub-Agent                                             
+                                        @endif
+                                    </small>
                                 </div>
                             </div>
                         </a>

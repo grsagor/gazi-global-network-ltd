@@ -28,9 +28,8 @@ Route::middleware('checkLogin')->group(function () {
     Route::prefix('admin')->group(function () {
         Route::prefix('dashboard')->controller(DashboardController::class)->group(function () {
             Route::get('/', 'index')->name('admin.dashboard.index');
-            Route::get('/paid/list', 'paidList')->name('admin.dashboard.paid.list');
-            Route::get('/unpaid/list', 'unpaidList')->name('admin.dashboard.unpaid.list');
             Route::get('/datatable', 'datatable')->name('admin.dashboard.datatable');
+            Route::get('/country-list', 'countriesList')->name('admin.dashboard.countries.list');
         });
         Route::prefix('users')->controller(AgentController::class)->group(function () {
             Route::get('/{role}', 'index')->name('admin.agents.index');
@@ -53,7 +52,7 @@ Route::middleware('checkLogin')->group(function () {
             Route::post('/update', 'update')->name('admin.passengers.update');
             Route::post('/delete', 'delete')->name('admin.passengers.delete');
             Route::get('/{id}', 'details')->name('admin.passengers.details');
-            Route::post('/status', 'status')->name('admin.agents.status');
+            Route::post('/status', 'status')->name('admin.passengers.status');
         });
         Route::prefix('required-data')->controller(RequiredDataController::class)->group(function () {
             Route::get('/{passenger_id}', 'passengerRequireData')->name('admin.required_data.single.passenger');
@@ -67,6 +66,9 @@ Route::middleware('checkLogin')->group(function () {
             Route::get('/agent/list', 'agentList')->name('admin.accounts.agent.list');
             Route::get('/agent/{id}', 'agentDetails')->name('admin.accounts.agent.details');
             Route::get('/print', 'agentPrint')->name('admin.accounts.agent.print');
+
+            Route::get('/paid/list', 'paidList')->name('admin.accounts.paid.list');
+            Route::get('/unpaid/list', 'unpaidList')->name('admin.accounts.unpaid.list');
         });
     });
 });

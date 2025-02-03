@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use App\Models\AgentSubagent;
+use App\Models\Country;
 use App\Models\Passenger;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -51,8 +52,8 @@ class PassengerController extends Controller
             $query->where('passport_no', $request->passport_no);
         }
         
-        if ($request->designated_country_name) {
-            $query->where('designated_country_name', $request->designated_country_name);
+        if ($request->country_id) {
+            $query->where('country_id', $request->country_id);
         }
         
         if ($request->company_name) {
@@ -86,10 +87,13 @@ class PassengerController extends Controller
                 $html .= '<a href="'.route('admin.passengers.details', ['id' => $row->id]).'" data-id="'.$row->id.'">'.$row->name.'</a>';
                 return $html;
             })
+            ->editColumn('country_id', function ($row) {
+                return $row->country->name;
+            })
             ->addColumn('agent_name', function ($row) {
                 return $row->agent->first_name . ' ' . $row->agent->last_name;
             })
-            ->editColumn('status', function ($row) {
+            ->editColumn('status', function ($row) use ($user) {
                 $html = '';
                 $html .= '<select data-id="'.$row->id.'" style="width: 223px;" class="form-select crudStatusBtn" aria-label="Default select example">';
                 $html .= '<option ' . ($row->status == 1 ? "selected" : '') . ' value="1">Request for onlist</option>';
@@ -106,7 +110,51 @@ class PassengerController extends Controller
                 $html .= '<option ' . ($row->status == 12 ? "selected" : '') . ' value="12">Resubmit</option>';
                 $html .= '<option ' . ($row->status == 13 ? "selected" : '') . ' value="13">Return</option>';
                 $html .= '</select>';
-                return $html;
+
+                if ($user->role == 1) {
+                    return $html;
+                } else {
+                    if ($row->status == 1) {
+                        return 'Request for onlist';
+                    }
+                    if ($row->status == 2) {
+                        return 'Onlisted';
+                    }
+                    if ($row->status == 3) {
+                        return 'Not submitted';
+                    }
+                    if ($row->status == 4) {
+                        return 'Submitted';
+                    }
+                    if ($row->status == 5) {
+                        return 'Pending';
+                    }
+                    if ($row->status == 6) {
+                        return 'Ready for submission';
+                    }
+                    if ($row->status == 7) {
+                        return 'Additional docs require';
+                    }
+                    if ($row->status == 8) {
+                        return 'Hold';
+                    }
+                    if ($row->status == 9) {
+                        return 'Permit';
+                    }
+                    if ($row->status == 10) {
+                        return 'Stamping done';
+                    }
+                    if ($row->status == 11) {
+                        return 'Rejected';
+                    }
+                    if ($row->status == 12) {
+                        return 'Resubmit';
+                    }
+                    if ($row->status == 13) {
+                        return 'Return';
+                    }
+                }
+
             })
             
             ->addColumn('action', function ($row) {
@@ -124,9 +172,10 @@ class PassengerController extends Controller
 
     public function create()
     {
+        $countries = Country::all();
         $user = Auth::user();
         $agents = User::where('role', 2)->get();
-        $html = view('backend.pages.passengers.create', compact('agents', 'user'))->render();
+        $html = view('backend.pages.passengers.create', compact('agents', 'user', 'countries'))->render();
         return response()->json(['success' => true, 'html' => $html]);
     }
 
@@ -143,7 +192,7 @@ class PassengerController extends Controller
             'pcc_number' => 'nullable|string|max:50',
             'pcc_issue_date' => 'nullable|date',
             'pcc_upload' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048',
-            'designated_country_name' => 'required|string|max:255',
+            'country_id' => 'required|string|max:255',
             'work_type' => 'nullable|string|max:255',
             'company_name' => 'nullable|string|max:255',
             'required_doc_name' => 'nullable|string|max:255',
@@ -181,8 +230,9 @@ class PassengerController extends Controller
 
     public function edit(Request $request)
     {
+        $countries = Country::all();
         $passenger = Passenger::findOrFail($request->id);
-        $html = view('backend.pages.passengers.edit', compact('passenger'))->render();
+        $html = view('backend.pages.passengers.edit', compact('passenger', 'countries'))->render();
         return response()->json(['success' => true, 'html' => $html]);
     }
 
@@ -198,7 +248,7 @@ class PassengerController extends Controller
             'pcc_number' => 'nullable|string|max:50',
             'pcc_issue_date' => 'nullable|date',
             'pcc_upload' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048',
-            'designated_country_name' => 'required|string|max:255',
+            'country_id' => 'required|string|max:255',
             'work_type' => 'nullable|string|max:255',
             'company_name' => 'nullable|string|max:255',
             'required_doc_name' => 'nullable|string|max:255',

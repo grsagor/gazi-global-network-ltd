@@ -1,8 +1,6 @@
 @extends('backend.layout.app')
 @section('content')
     <div class="w-100 overflow-hidden">
-        <input type="hidden" id="paid_list_url" value="{{ route('admin.dashboard.paid.list') }}">
-        <input type="hidden" id="unpaid_list_url" value="{{ route('admin.dashboard.unpaid.list') }}">
         <div class="row">
             <div class="col-lg-3 col-md-12 col-6 mb-6">
                 <div class="card h-100">
@@ -13,8 +11,8 @@
                                     class="rounded" />
                             </div>
                         </div>
-                        <p class="mb-1">Total Contact Amount</p>
-                        <h4 class="card-title mb-3">৳ {{ $total_contact_amount }}</h4>
+                        <p class="mb-1">Total Passengers</p>
+                        <h4 class="card-title mb-3">{{ $total_passengers }}</h4>
                     </div>
                 </div>
             </div>
@@ -27,8 +25,8 @@
                                     class="rounded" />
                             </div>
                         </div>
-                        <p class="mb-1">Total Deposit Amount</p>
-                        <h4 class="card-title mb-3">৳ {{ $total_deposit_amount }}</h4>
+                        <p class="mb-1">Request for onlist</p>
+                        <h4 class="card-title mb-3">{{ $request_onlisted_passengers }}</h4>
                     </div>
                 </div>
             </div>
@@ -41,8 +39,8 @@
                                     class="rounded" />
                             </div>
                         </div>
-                        <p class="mb-1">Total Due Amount</p>
-                        <h4 class="card-title mb-3">৳ {{ $total_due_amount }}</h4>
+                        <p class="mb-1">Onlisted</p>
+                        <h4 class="card-title mb-3">{{ $onlisted_passengers }}</h4>
                     </div>
                 </div>
             </div>
@@ -55,177 +53,236 @@
                                     class="rounded" />
                             </div>
                         </div>
-                        <p class="mb-1">Total Discount Amount</p>
-                        <h4 class="card-title mb-3">৳ {{ $total_discount_amount }}</h4>
+                        <p class="mb-1">Not submitted</p>
+                        <h4 class="card-title mb-3">{{ $not_submitted_passengers }}</h4>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+            <div class="col-lg-3 col-md-12 col-6 mb-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="card-title d-flex align-items-start justify-content-between mb-4">
+                            <div class="avatar flex-shrink-0">
+                                <img src="{{ asset('assets/img/icons/unicons/chart-success.png') }}" alt="chart success"
+                                    class="rounded" />
+                            </div>
+                        </div>
+                        <p class="mb-1">Submitted</p>
+                        <h4 class="card-title mb-3">{{ $submitted_passengers }}</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-12 col-6 mb-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="card-title d-flex align-items-start justify-content-between mb-4">
+                            <div class="avatar flex-shrink-0">
+                                <img src="{{ asset('assets/img/icons/unicons/wallet-info.png') }}" alt="wallet info"
+                                    class="rounded" />
+                            </div>
+                        </div>
+                        <p class="mb-1">Pending</p>
+                        <h4 class="card-title mb-3">{{ $pending_passengers }}</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-12 col-6 mb-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="card-title d-flex align-items-start justify-content-between mb-4">
+                            <div class="avatar flex-shrink-0">
+                                <img src="{{ asset('assets/img/icons/unicons/chart-success.png') }}" alt="chart success"
+                                    class="rounded" />
+                            </div>
+                        </div>
+                        <p class="mb-1">Ready for submission</p>
+                        <h4 class="card-title mb-3">{{ $ready_for_submission_passengers }}</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-12 col-6 mb-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="card-title d-flex align-items-start justify-content-between mb-4">
+                            <div class="avatar flex-shrink-0">
+                                <img src="{{ asset('assets/img/icons/unicons/wallet-info.png') }}" alt="wallet info"
+                                    class="rounded" />
+                            </div>
+                        </div>
+                        <p class="mb-1">Additional docs require</p>
+                        <h4 class="card-title mb-3">{{ $additional_doc_required_passengers }}</h4>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+            <div class="col-lg-3 col-md-12 col-6 mb-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="card-title d-flex align-items-start justify-content-between mb-4">
+                            <div class="avatar flex-shrink-0">
+                                <img src="{{ asset('assets/img/icons/unicons/chart-success.png') }}" alt="chart success"
+                                    class="rounded" />
+                            </div>
+                        </div>
+                        <p class="mb-1">Hold</p>
+                        <h4 class="card-title mb-3">{{ $hold_passengers }}</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-12 col-6 mb-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="card-title d-flex align-items-start justify-content-between mb-4">
+                            <div class="avatar flex-shrink-0">
+                                <img src="{{ asset('assets/img/icons/unicons/wallet-info.png') }}" alt="wallet info"
+                                    class="rounded" />
+                            </div>
+                        </div>
+                        <p class="mb-1">Permit</p>
+                        <h4 class="card-title mb-3">{{ $permit_passengers }}</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-12 col-6 mb-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="card-title d-flex align-items-start justify-content-between mb-4">
+                            <div class="avatar flex-shrink-0">
+                                <img src="{{ asset('assets/img/icons/unicons/chart-success.png') }}" alt="chart success"
+                                    class="rounded" />
+                            </div>
+                        </div>
+                        <p class="mb-1">Stamping done</p>
+                        <h4 class="card-title mb-3">{{ $stamping_done_passengers }}</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-12 col-6 mb-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="card-title d-flex align-items-start justify-content-between mb-4">
+                            <div class="avatar flex-shrink-0">
+                                <img src="{{ asset('assets/img/icons/unicons/wallet-info.png') }}" alt="wallet info"
+                                    class="rounded" />
+                            </div>
+                        </div>
+                        <p class="mb-1">Rejected</p>
+                        <h4 class="card-title mb-3">{{ $rejected_passengers }}</h4>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+            <div class="col-lg-3 col-md-12 col-6 mb-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="card-title d-flex align-items-start justify-content-between mb-4">
+                            <div class="avatar flex-shrink-0">
+                                <img src="{{ asset('assets/img/icons/unicons/chart-success.png') }}" alt="chart success"
+                                    class="rounded" />
+                            </div>
+                        </div>
+                        <p class="mb-1">Resubmit</p>
+                        <h4 class="card-title mb-3">{{ $resubumit_passengers }}</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-12 col-6 mb-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="card-title d-flex align-items-start justify-content-between mb-4">
+                            <div class="avatar flex-shrink-0">
+                                <img src="{{ asset('assets/img/icons/unicons/wallet-info.png') }}" alt="wallet info"
+                                    class="rounded" />
+                            </div>
+                        </div>
+                        <p class="mb-1">Return</p>
+                        <h4 class="card-title mb-3">{{ $return_passengers }}</h4>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-6 overflow-hidden">
-                <div class="card overflow-auto">
-                    <input type="hidden" id="agent_list_url" value="{{ route('admin.accounts.agent.list') }}">
-                    <div class="datatable-header flex-column flex-md-row pb-0">
-                        <div class="head-label text-center">
-                            <h5 class="card-title mb-0">Top Paid Agents</h5>
-                        </div>
-                    </div>
-                    <table id="paid_datatable" class="table table-hover" style="width:100%">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Contact Amount</th>
-                                <th>Deposit Amount</th>
-                                <th>Due Amount</th>
-                                <th>Discount Amount</th>
-                                <th>Return Amount</th>
-                            </tr>
-                        </thead>
-                    </table>
+        <div class="card overflow-auto">
+            <input type="hidden" id="agent_list_url" value="{{ route('admin.accounts.agent.list') }}">
+            <div class="datatable-header flex-column flex-md-row pb-0">
+                <div class="head-label text-center">
+                    <h5 class="card-title mb-0">Countries Data</h5>
                 </div>
             </div>
-            <div class="col-6 overflow-hidden">
-                <div class="card overflow-auto">
-                    <input type="hidden" id="agent_list_url" value="{{ route('admin.accounts.agent.list') }}">
-                    <div class="datatable-header flex-column flex-md-row pb-0">
-                        <div class="head-label text-center">
-                            <h5 class="card-title mb-0">Top Unpaid Agents</h5>
-                        </div>
-                    </div>
-                    <table id="unpaid_datatable" class="table table-hover overflow-x-auto" style="width:100%">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Contact Amount</th>
-                                <th>Deposit Amount</th>
-                                <th>Due Amount</th>
-                                <th>Discount Amount</th>
-                                <th>Return Amount</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
-            </div>
+            <table id="country_datatable" class="table table-hover" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>SI</th>
+                        <th>Country Name</th>
+                        <th>Total Passengers</th>
+                        <th>Request Onlisted</th>
+                        <th>Onlisted</th>
+                        <th>Not Submitted</th>
+                        <th>Submitted</th>
+                        <th>Pending</th>
+                        <th>Ready for Submission</th>
+                        <th>Additional Doc Required</th>
+                        <th>Hold</th>
+                        <th>Permit</th>
+                        <th>Stamping Done</th>
+                        <th>Rejected</th>
+                        <th>Resubmit</th>
+                        <th>Return</th>
+                    </tr>
+                </thead>
+            </table>
         </div>
     </div>
 @endsection
 @section('js')
-    <script>
-        function mainDatatable() {
-            const columns = [{
-                    data: 'name',
-                    name: 'name'
-                },
+<script>
+    $(document).ready(function() {
+        $('#country_datatable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: "{{ route('admin.dashboard.countries.list') }}",
+            columns: [
                 {
-                    data: 'contact_amount',
-                    name: 'contact_amount'
+                data: null,
+                name: 'index',
+                render: function(data, type, row, meta) {
+                    return meta.row + 1; // Generates 1, 2, 3, ...
                 },
-                {
-                    data: 'deposit_amount',
-                    name: 'deposit_amount'
-                },
-                {
-                    data: 'due_amount',
-                    name: 'due_amount'
-                },
-                {
-                    data: 'discount_amount',
-                    name: 'discount_amount'
-                },
-                {
-                    data: 'return_amount',
-                    name: 'return_amount'
-                },
+                orderable: false, // Index should not be sortable
+                searchable: false
+            },
+                { data: 'country_name', name: 'country_name' },
+                { data: 'total_passengers', name: 'total_passengers' },
+                { data: 'request_onlisted_passengers', name: 'request_onlisted_passengers' },
+                { data: 'onlisted_passengers', name: 'onlisted_passengers' },
+                { data: 'not_submitted_passengers', name: 'not_submitted_passengers' },
+                { data: 'submitted_passengers', name: 'submitted_passengers' },
+                { data: 'pending_passengers', name: 'pending_passengers' },
+                { data: 'ready_for_submission_passengers', name: 'ready_for_submission_passengers' },
+                { data: 'additional_doc_required_passengers', name: 'additional_doc_required_passengers' },
+                { data: 'hold_passengers', name: 'hold_passengers' },
+                { data: 'permit_passengers', name: 'permit_passengers' },
+                { data: 'stamping_done_passengers', name: 'stamping_done_passengers' },
+                { data: 'rejected_passengers', name: 'rejected_passengers' },
+                { data: 'resubmit_passengers', name: 'resubmit_passengers' },
+                { data: 'return_passengers', name: 'return_passengers' }
             ]
-            const url = $('#paid_list_url').val();
-            console.log('url', url)
-            if ($.fn.DataTable.isDataTable('#paid_datatable')) {
-                $('#paid_datatable').DataTable().destroy();
-            }
-
-            const data = {};
-
-            $('#paid_datatable').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: url,
-                    type: "GET",
-                    data: data
-                },
-                columns: columns,
-                paging: true,
-                searching: true,
-                ordering: true,
-                info: true,
-                lengthMenu: [10, 25, 50, 100],
-                dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-end"Bf>>' +
-                    'rtip',
-                buttons: []
-            }).on('draw', function() {
-                $('.bootstrap4-toggle').bootstrapToggle();
-            });
-        }
-
-        function agentDatatable() {
-            const columns = [{
-                    data: 'name',
-                    name: 'name'
-                },
-                {
-                    data: 'contact_amount',
-                    name: 'contact_amount'
-                },
-                {
-                    data: 'deposit_amount',
-                    name: 'deposit_amount'
-                },
-                {
-                    data: 'due_amount',
-                    name: 'due_amount'
-                },
-                {
-                    data: 'discount_amount',
-                    name: 'discount_amount'
-                },
-                {
-                    data: 'return_amount',
-                    name: 'return_amount'
-                },
-            ]
-            const url = $('#unpaid_list_url').val();
-            console.log('url', url)
-            if ($.fn.DataTable.isDataTable('#unpaid_datatable')) {
-                $('#unpaid_datatable').DataTable().destroy();
-            }
-
-            const data = {};
-
-            $('#unpaid_datatable').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: url,
-                    type: "GET",
-                    data: data
-                },
-                columns: columns,
-                paging: true,
-                searching: true,
-                ordering: true,
-                info: true,
-                lengthMenu: [10, 25, 50, 100],
-                dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-end"Bf>>' +
-                    'rtip',
-                buttons: []
-            }).on('draw', function() {
-                $('.bootstrap4-toggle').bootstrapToggle();
-            });
-        }
-
-        $(document).ready(function() {
-            mainDatatable();
-            agentDatatable();
         });
+    });
     </script>
 @endsection

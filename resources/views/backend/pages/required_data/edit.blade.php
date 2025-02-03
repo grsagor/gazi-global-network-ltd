@@ -67,10 +67,10 @@
                     @endif
                 </div>
                 <div class="mb-3">
-                    <label for="designated_country_name" class="form-label">Designated Country Name</label>
-                    <input type="text" class="form-control" id="designated_country_name"
-                        name="designated_country_name"
-                        value="{{ old('designated_country_name', $passenger->designated_country_name) }}"
+                    <label for="country_id" class="form-label">Designated Country Name</label>
+                    <input type="text" class="form-control" id="country_id"
+                        name="country_id"
+                        value="{{ old('country_id', $passenger->country_id) }}"
                         placeholder="Enter Designated Country Name" required>
                 </div>
                 <div class="mb-3">

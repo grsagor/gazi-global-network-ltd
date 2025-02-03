@@ -32,7 +32,10 @@ class AgentController extends Controller
     {
         // return 'abc';
         $query = User::query();
-        if (Auth::user()->role == 2) {
+        if ($request->agent_id) {
+            $sub_agent_ids = AgentSubagent::where('agent_id', $request->agent_id)->pluck('sub_agent_id');
+            $query->whereIn('id', $sub_agent_ids);
+        } elseif (Auth::user()->role == 2) {
             $sub_agent_ids = AgentSubagent::where('agent_id', Auth::user()->id)->pluck('sub_agent_id');
             $query->whereIn('id', $sub_agent_ids);
         }
@@ -67,7 +70,10 @@ class AgentController extends Controller
             })
             ->editColumn('status', function ($row) {
                 $html = '<div>';
-                $html .= '<input data-id="' . $row->id . '" class="bootstrap4-toggle crudStatusBtn" type="checkbox" ' . ($row->status ? 'checked' : '') . ' data-toggle="toggle" data-on="Activated" data-off="Deactivated" data-onstyle="success" data-offstyle="danger" data-size="xs">';
+                $html .= '<label class="switch" data-id="729">
+                <input type="checkbox" class="switch_input crudStatusBtn" data-id="' . $row->id . '" ' . ($row->status ? 'checked' : '') . '>
+                <span class="switch_slider round"></span>
+            </label>';
                 $html .= '</div>';
                 return $html;
             })
@@ -167,7 +173,7 @@ class AgentController extends Controller
             'email' => 'required|email|unique:users,email,' . $id,
             'phone' => 'required|string|max:15',
             'password' => 'nullable|string|min:6',
-            'rating' => 'nullable|string|min:11',
+            'rating' => 'nullable|string',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 

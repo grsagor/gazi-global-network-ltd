@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('pcc_number')->nullable();
             $table->date('pcc_issue_date')->nullable();
             $table->string('pcc_upload')->nullable();
-            $table->string('designated_country_name');
+            $table->string('country_id');
             $table->string('work_type')->nullable();
             $table->string('company_name')->nullable();
             $table->string('required_doc_name')->nullable();

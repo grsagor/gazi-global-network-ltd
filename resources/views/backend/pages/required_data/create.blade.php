@@ -65,9 +65,9 @@
                         accept="image/*,application/pdf" required>
                 </div>
                 <div class="mb-3">
-                    <label for="designated_country_name" class="form-label">Designated Country Name</label>
-                    <input type="text" class="form-control" id="designated_country_name"
-                        name="designated_country_name" placeholder="Enter Designated Country Name" required>
+                    <label for="country_id" class="form-label">Designated Country Name</label>
+                    <input type="text" class="form-control" id="country_id"
+                        name="country_id" placeholder="Enter Designated Country Name" required>
                 </div>
                 <div class="mb-3">
                     <label for="work_type" class="form-label">Work Type</label>

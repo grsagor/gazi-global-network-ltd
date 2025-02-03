@@ -16,6 +16,9 @@ class Passenger extends Model
     }
 
     public function agent() {
-        return $this->belongsTo(User::class, 'agent_id');
+        return $this->belongsTo(User::class, 'agent_id')->withTrashed();
+    }
+    public function country() {
+        return $this->belongsTo(Country::class, 'country_id');
     }
 }

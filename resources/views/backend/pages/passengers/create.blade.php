@@ -65,9 +65,13 @@
                         accept="image/*,application/pdf" required>
                 </div>
                 <div class="mb-3">
-                    <label for="designated_country_name" class="form-label">Designated Country Name</label>
-                    <input type="text" class="form-control" id="designated_country_name"
-                        name="designated_country_name" placeholder="Enter Designated Country Name" required>
+                    <label for="country_id" class="form-label">Designated Country Name</label>
+                    <select class="form-select" id="country_id" name="country_id" required>
+                        <option value="" selected disabled>Choose...</option>
+                        @foreach ($countries as $country)
+                            <option value="{{ $country->id }}">{{ $country->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="mb-3">
                     <label for="work_type" class="form-label">Work Type</label>
@@ -78,11 +82,6 @@
                     <label for="company_name" class="form-label">Company Name</label>
                     <input type="text" class="form-control" id="company_name" name="company_name"
                         placeholder="Enter Company Name" required>
-                </div>
-                <div class="mb-3">
-                    <label for="required_doc_name" class="form-label">Add Required Document Name (Remark)</label>
-                    <textarea class="form-control" id="required_doc_name" name="required_doc_name" placeholder="Enter Remarks"
-                        rows="3" required></textarea>
                 </div>
                 <div class="mb-3">
                     <label for="application_status" class="form-label">Application Status</label>

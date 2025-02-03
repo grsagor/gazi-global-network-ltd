@@ -1,12 +1,19 @@
 @extends('backend.layout.app')
 
 @section('content')
+    <input type="hidden" id="edit_url" value="{{ route('admin.passengers.edit') }}">
+    <input type="hidden" id="update_url" value="{{ route('admin.passengers.update') }}">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 <div class="card">
-                    <div class="card-header">
+                    <div class="card-header d-flex justify-content-between">
                         <h3>Passenger Details</h3>
+                        <div>
+                            <button type="button" class="btn btn-sm btn-primary" id="exportCsvBtn">exportCsvBtn</button>
+                            <button type="button" data-id="{{ $passenger->id }}"
+                                class="btn btn-sm btn-primary crudEditBtn">Edit</button>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="row mb-3">
@@ -38,7 +45,7 @@
 
                         <div class="row mb-3">
                             <div class="col-md-6"><strong>Designated Country:</strong></div>
-                            <div class="col-md-6">{{ $passenger->designated_country_name }}</div>
+                            <div class="col-md-6">{{ $passenger->country_id }}</div>
                         </div>
 
                         <div class="row mb-3">
@@ -96,8 +103,8 @@
                             <div class="row mb-3">
                                 <div class="col-md-6"><strong>PDF Upload:</strong></div>
                                 <div class="col-md-6">
-                                    <a href="{{ asset($passenger->pdf_upload) }}" target="_blank"
-                                        class="btn btn-info">View PDF</a>
+                                    <a href="{{ asset($passenger->pdf_upload) }}" target="_blank" class="btn btn-info">View
+                                        PDF</a>
                                 </div>
                             </div>
                         @endif
@@ -126,8 +133,8 @@
                             <div class="row mb-3">
                                 <div class="col-md-6"><strong>PCC Upload:</strong></div>
                                 <div class="col-md-6">
-                                    <a href="{{ asset($passenger->pcc_upload) }}" target="_blank"
-                                        class="btn btn-info">View PCC</a>
+                                    <a href="{{ asset($passenger->pcc_upload) }}" target="_blank" class="btn btn-info">View
+                                        PCC</a>
                                 </div>
                             </div>
                         @endif
@@ -137,4 +144,64 @@
             </div>
         </div>
     </div>
+    <!-- Modal -->
+    <div class="modal fade" id="crudModal" tabindex="-1" aria-labelledby="crudModalLabel" aria-hidden="true">
+
+    </div>
+@endsection
+
+
+@section('js')
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("exportCsvBtn").addEventListener("click", function() {
+                let passengers = [
+                @json($passenger)]; // Ensure you pass the passengers data to the view
+                let csvContent = "data:text/csv;charset=utf-8,";
+
+                // CSV Header
+                csvContent += "Name,Passport No.,Country,Company Name,AgentID,Status\n";
+
+                // Status Mapping
+                const statusMapping = {
+                    1: "Request for onlist",
+                    2: "Onlisted",
+                    3: "Not submitted",
+                    4: "Submitted",
+                    5: "Pending",
+                    6: "Ready for submission",
+                    7: "Additional docs require",
+                    8: "Hold",
+                    9: "Permit",
+                    10: "Stamping done",
+                    11: "Rejected",
+                    12: "Resubmit",
+                    13: "Return"
+                };
+
+                // Data Rows
+                passengers.forEach(passenger => {
+                    let row = [
+                        `"${passenger.name}"`,
+                        `"${passenger.passport_no ?? 'N/A'}"`,
+                        `"${passenger.country_id}"`,
+                        `"${passenger.company_name ?? 'N/A'}"`,
+                        `"${passenger.agent_id ?? 'N/A'}"`,
+                        `"${statusMapping[passenger.status] || 'Unknown'}"`
+                    ].join(",");
+
+                    csvContent += row + "\n";
+                });
+
+                // Create and download the CSV file
+                let encodedUri = encodeURI(csvContent);
+                let link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", "passenger_data.csv");
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        });
+    </script>
 @endsection

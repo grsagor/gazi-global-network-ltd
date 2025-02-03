@@ -62,7 +62,7 @@
         <input type="hidden" id="update_url" value="{{ route('admin.passengers.update') }}">
         <input type="hidden" id="delete_url" value="{{ route('admin.passengers.delete') }}">
         <input type="hidden" id="print_url" value="{{ route('admin.passengers.print') }}">
-        <input type="hidden" id="status_url" value="{{ route('admin.agents.status') }}">
+        <input type="hidden" id="status_url" value="{{ route('admin.passengers.status') }}">
 
         <div class="datatable-header flex-column flex-md-row pb-0">
             <div class="head-label text-center">
@@ -83,6 +83,7 @@
         <table id="datatable" class="table table-hover" style="width:100%">
             <thead>
                 <tr>
+                    <th>SI</th>
                     <th>Name</th>
                     <th>Passport No.</th>
                     <th>Country</th>
@@ -105,6 +106,15 @@
 @section('js')
     <script>
         const columns = [{
+                data: null,
+                name: 'index',
+                render: function(data, type, row, meta) {
+                    return meta.row + 1; // Generates 1, 2, 3, ...
+                },
+                orderable: false, // Index should not be sortable
+                searchable: false
+            },
+            {
                 data: 'name',
                 name: 'name'
             },
@@ -113,8 +123,8 @@
                 name: 'passport_no'
             },
             {
-                data: 'designated_country_name',
-                name: 'designated_country_name'
+                data: 'country_id',
+                name: 'country_id'
             },
             {
                 data: 'company_name',
@@ -136,7 +146,8 @@
                 data: 'action',
                 name: 'action',
                 orderable: false,
-                searchable: false
+                searchable: false,
+                className: 'passenger_status_column'
             } // Action buttons
         ]
 
@@ -144,7 +155,7 @@
             $('#filter_btn').click(function() {
                 const name = $('#filter_name').val();
                 const passport_no = $('#filter_passport').val();
-                const designated_country_name = $('#filter_country').val();
+                const country_id = $('#filter_country').val();
                 const company_name = $('#filter_company_name').val();
                 const agent_name = $('#filter_agent_name').val();
                 const agent_id = $('#filter_agent_id').val();
@@ -153,7 +164,7 @@
                 const data = {
                     name,
                     passport_no,
-                    designated_country_name,
+                    country_id,
                     company_name,
                     agent_name,
                     agent_id,

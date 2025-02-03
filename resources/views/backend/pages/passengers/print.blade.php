@@ -32,7 +32,7 @@
 
         <div class="row mb-3">
             <div class="col-md-6"><strong>Designated Country:</strong></div>
-            <div class="col-md-6">{{ $passenger->designated_country_name }}</div>
+            <div class="col-md-6">{{ $passenger->country_id }}</div>
         </div>
 
         <div class="row mb-3">

@@ -14,40 +14,41 @@
     <div class="menu-inner-shadow"></div>
 
     <ul class="menu-inner py-1">
-        @if ($user_role == 1)
-            <li class="menu-item {{ request()->routeIs('admin.dashboard.index') ? 'active' : '' }}">
-                <a href="{{ route('admin.dashboard.index') }}" class="menu-link">
-                    <i class="menu-icon tf-icons bx bx-home-smile"></i>
-                    <div class="text-truncate" data-i18n="Email">Dashboards</div>
-                </a>
-            </li>
-        @endif
+        {{-- @if ($user_role == 1) --}}
+        <li class="menu-item {{ request()->routeIs('admin.dashboard.index') ? 'active' : '' }}">
+            <a href="{{ route('admin.dashboard.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-home-smile"></i>
+                <div class="text-truncate" data-i18n="Email">Dashboards</div>
+            </a>
+        </li>
+        {{-- @endif --}}
 
         @if ($user_role != 3)
-        <li class="menu-item {{ request()->routeIs('admin.agents.index') && request('role') ? 'open active' : '' }}">
-            <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bx-home-smile"></i>
-                <div class="text-truncate" data-i18n="Dashboards">Users</div>
-            </a>
-            <ul class="menu-sub">
-                @if ($user_role == 1)
-                    <li
-                        class="menu-item {{ request()->routeIs('admin.agents.index') && request('role') === 'agent' ? 'active' : '' }}">
-                        <a href="{{ route('admin.agents.index', ['role' => 'agent']) }}" class="menu-link">
-                            <div class="text-truncate" data-i18n="Agent">Agent</div>
-                        </a>
-                    </li>
-                @endif
-                @if ($user_role == 1 || $user_role == 2)
-                    <li
-                        class="menu-item {{ request()->routeIs('admin.agents.index') && request('role') === 'sub-agent' ? 'active' : '' }}">
-                        <a href="{{ route('admin.agents.index', ['role' => 'sub-agent']) }}" class="menu-link">
-                            <div class="text-truncate" data-i18n="Sub Agent">Sub Agent</div>
-                        </a>
-                    </li>
-                @endif
-            </ul>
-        </li>
+            <li
+                class="menu-item {{ request()->routeIs('admin.agents.index') && request('role') ? 'open active' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons bx bx-home-smile"></i>
+                    <div class="text-truncate" data-i18n="Dashboards">Users</div>
+                </a>
+                <ul class="menu-sub">
+                    @if ($user_role == 1)
+                        <li
+                            class="menu-item {{ request()->routeIs('admin.agents.index') && request('role') === 'agent' ? 'active' : '' }}">
+                            <a href="{{ route('admin.agents.index', ['role' => 'agent']) }}" class="menu-link">
+                                <div class="text-truncate" data-i18n="Agent">Agent</div>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($user_role == 1 || $user_role == 2)
+                        <li
+                            class="menu-item {{ request()->routeIs('admin.agents.index') && request('role') === 'sub-agent' ? 'active' : '' }}">
+                            <a href="{{ route('admin.agents.index', ['role' => 'sub-agent']) }}" class="menu-link">
+                                <div class="text-truncate" data-i18n="Sub Agent">Sub Agent</div>
+                            </a>
+                        </li>
+                    @endif
+                </ul>
+            </li>
         @endif
 
         <li class="menu-item {{ request()->routeIs('admin.passengers.index') ? 'active' : '' }}">
@@ -56,12 +57,14 @@
                 <div class="text-truncate" data-i18n="Email">Passengers</div>
             </a>
         </li>
-        <li class="menu-item {{ request()->routeIs('admin.accounts.index') ? 'active' : '' }}">
-            <a href="{{ route('admin.accounts.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-home-smile"></i>
-                <div class="text-truncate" data-i18n="Email">Accounts</div>
-            </a>
-        </li>
+        @if (Auth::user()->role != 3)
+            <li class="menu-item {{ request()->routeIs('admin.accounts.index') ? 'active' : '' }}">
+                <a href="{{ route('admin.accounts.index') }}" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-home-smile"></i>
+                    <div class="text-truncate" data-i18n="Email">Accounts</div>
+                </a>
+            </li>
+        @endif
     </ul>
 </aside>
 <!-- / Menu -->
