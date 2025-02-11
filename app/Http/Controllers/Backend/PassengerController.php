@@ -79,7 +79,7 @@ class PassengerController extends Controller
         }
         
 
-        $data = $query->get();
+        $data = $query->orderBy('created_at', 'desc')->get();
 
         return DataTables::of($data)
             ->editColumn('name', function ($row) {
@@ -96,19 +96,19 @@ class PassengerController extends Controller
             ->editColumn('status', function ($row) use ($user) {
                 $html = '';
                 $html .= '<select data-id="'.$row->id.'" style="width: 223px;" class="form-select crudStatusBtn" aria-label="Default select example">';
-                $html .= '<option ' . ($row->status == 1 ? "selected" : '') . ' value="1">Request for onlist</option>';
-                $html .= '<option ' . ($row->status == 2 ? "selected" : '') . ' value="2">Onlisted</option>';
-                $html .= '<option ' . ($row->status == 3 ? "selected" : '') . ' value="3">Not submitted</option>';
-                $html .= '<option ' . ($row->status == 4 ? "selected" : '') . ' value="4">Submitted</option>';
-                $html .= '<option ' . ($row->status == 5 ? "selected" : '') . ' value="5">Pending</option>';
-                $html .= '<option ' . ($row->status == 6 ? "selected" : '') . ' value="6">Ready for submission</option>';
                 $html .= '<option ' . ($row->status == 7 ? "selected" : '') . ' value="7">Additional docs require</option>';
                 $html .= '<option ' . ($row->status == 8 ? "selected" : '') . ' value="8">Hold</option>';
+                $html .= '<option ' . ($row->status == 3 ? "selected" : '') . ' value="3">Not submitted</option>';
+                $html .= '<option ' . ($row->status == 2 ? "selected" : '') . ' value="2">Onlisted</option>';
+                $html .= '<option ' . ($row->status == 5 ? "selected" : '') . ' value="5">Pending</option>';
                 $html .= '<option ' . ($row->status == 9 ? "selected" : '') . ' value="9">Permit</option>';
-                $html .= '<option ' . ($row->status == 10 ? "selected" : '') . ' value="10">Stamping done</option>';
+                $html .= '<option ' . ($row->status == 6 ? "selected" : '') . ' value="6">Ready for submission</option>';
                 $html .= '<option ' . ($row->status == 11 ? "selected" : '') . ' value="11">Rejected</option>';
+                $html .= '<option ' . ($row->status == 1 ? "selected" : '') . ' value="1">Request for onlist</option>';
                 $html .= '<option ' . ($row->status == 12 ? "selected" : '') . ' value="12">Resubmit</option>';
                 $html .= '<option ' . ($row->status == 13 ? "selected" : '') . ' value="13">Return</option>';
+                $html .= '<option ' . ($row->status == 10 ? "selected" : '') . ' value="10">Stamping done</option>';
+                $html .= '<option ' . ($row->status == 4 ? "selected" : '') . ' value="4">Submitted</option>';
                 $html .= '</select>';
 
                 if ($user->role == 1) {
@@ -158,7 +158,7 @@ class PassengerController extends Controller
             })
             
             ->addColumn('action', function ($row) {
-                $html = '<div class="d-flex flex-wrap gap-2">';
+                $html = '<div class="d-flex flex-wrap gap-2" style="width: 170px;">';
                 $html .= '<a href="'.route('admin.required_data.single.passenger', ['passenger_id' => $row->id]).'" class="btn btn-sm btn-info">Data</a>';
                 $html .= '<button type="button" data-id="'.$row->id.'" class="btn btn-sm btn-success crudPrintBtn">Print</button>';
                 $html .= '<button type="button" data-id="'.$row->id.'" class="btn btn-sm btn-primary crudEditBtn">Edit</button>';
@@ -185,8 +185,8 @@ class PassengerController extends Controller
             'name' => 'required|string|max:255',
             'agent_id' => 'required',
             'father_name' => 'required|string|max:255',
-            'nid_no' => 'nullable|string|max:20',
-            'passport_no' => 'nullable|string|max:20',
+            'nid_no' => 'nullable|string|max:20|unique:passengers,nid_no',
+            'passport_no' => 'nullable|string|max:20|unique:passengers,passport_no',
             'passport_expire_date' => 'nullable|date',
             'passport_info_upload' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048',
             'pcc_number' => 'nullable|string|max:50',
@@ -241,8 +241,8 @@ class PassengerController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'father_name' => 'required|string|max:255',
-            'nid_no' => 'nullable|string|max:20',
-            'passport_no' => 'nullable|string|max:20',
+            'nid_no' => 'nullable|string|max:20|unique:passengers,nid_no,' . $request->id,
+            'passport_no' => 'nullable|string|max:20|unique:passengers,passport_no,' . $request->id,
             'passport_expire_date' => 'nullable|date',
             'passport_info_upload' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048',
             'pcc_number' => 'nullable|string|max:50',

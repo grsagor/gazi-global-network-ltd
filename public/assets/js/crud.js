@@ -59,6 +59,7 @@ $(document).ready(function () {
         });
     });
     $(document).on('click', '#crudStoreBtn', function () {
+        $('.error-message').remove();
         const url = $('#store_url').val();
         const formData = new FormData(document.getElementById('crudCreateForm'));
         $.ajax({
@@ -112,6 +113,7 @@ $(document).ready(function () {
         });
     });
     $(document).on('click', '#crudUpdateBtn', function () {
+        $('.error-message').remove();
         const url = $('#update_url').val();
         const formData = new FormData(document.getElementById('crudUpdateForm'));
         $.ajax({

@@ -80,21 +80,23 @@
                 </div>
             @endif
         </div>
-        <table id="datatable" class="table table-hover" style="width:100%">
-            <thead>
-                <tr>
-                    <th>SI</th>
-                    <th>Name</th>
-                    <th>Passport No.</th>
-                    <th>Country</th>
-                    <th>Company Name</th>
-                    <th>Agent Name</th>
-                    <th>AgentID</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-        </table>
+        <div class="overflow-auto">
+            <table id="datatable" class="table table-hover" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th>SI</th>
+                        <th>Name</th>
+                        <th>Passport No.</th>
+                        <th>Country</th>
+                        <th>Company Name</th>
+                        <th>Agent Name</th>
+                        <th>AgentID</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
     </div>
 
     <!-- Modal -->

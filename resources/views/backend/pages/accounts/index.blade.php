@@ -61,6 +61,7 @@
                 </div>
             </div>
         </div>
+        @if ($user->role == 1)
         <div class="row">
             <div class="col-6 overflow-hidden">
                 <div class="card overflow-auto">
@@ -107,8 +108,10 @@
                 </div>
             </div>
         </div>
+        @endif
     </div>
-    <div class="card">
+    @if ($user->role == 1)
+    <div class="card mb-5">
         <input type="hidden" id="agent_list_url" value="{{ route('admin.accounts.agent.list') }}">
         <div class="datatable-header flex-column flex-md-row pb-0">
             <div class="head-label text-center">
@@ -116,6 +119,27 @@
             </div>
         </div>
         <table id="agent_datatable" class="table table-hover" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Contact Amount</th>
+                    <th>Deposit Amount</th>
+                    <th>Due Amount</th>
+                    <th>Discount Amount</th>
+                    <th>Return Amount</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    @endif
+    <div class="card">
+        <input type="hidden" id="passenger_list_url" value="{{ route('admin.accounts.passenger.list') }}">
+        <div class="datatable-header flex-column flex-md-row pb-0">
+            <div class="head-label text-center">
+                <h5 class="card-title mb-0">Passenger Accounts</h5>
+            </div>
+        </div>
+        <table id="passenger_datatable" class="table table-hover" style="width:100%">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -144,23 +168,28 @@
                 },
                 {
                     data: 'contact_amount',
-                    name: 'contact_amount'
+                    name: 'contact_amount',
+                    className: 'text-center',
                 },
                 {
                     data: 'deposit_amount',
-                    name: 'deposit_amount'
+                    name: 'deposit_amount',
+                    className: 'text-center',
                 },
                 {
                     data: 'due_amount',
-                    name: 'due_amount'
+                    name: 'due_amount',
+                    className: 'text-center',
                 },
                 {
                     data: 'discount_amount',
-                    name: 'discount_amount'
+                    name: 'discount_amount',
+                    className: 'text-center',
                 },
                 {
                     data: 'return_amount',
-                    name: 'return_amount'
+                    name: 'return_amount',
+                    className: 'text-center',
                 },
             ]
             const url = $('#agent_list_url').val();
@@ -198,9 +227,76 @@
                 $('.bootstrap4-toggle').bootstrapToggle();
             });
         }
+        function passengerDatatable() {
+            const columns = [{
+                    data: 'name',
+                    name: 'name'
+                },
+                {
+                    data: 'contact_amount',
+                    name: 'contact_amount',
+                    className: 'text-center',
+                },
+                {
+                    data: 'deposit_amount',
+                    name: 'deposit_amount',
+                    className: 'text-center',
+                },
+                {
+                    data: 'due_amount',
+                    name: 'due_amount',
+                    className: 'text-center',
+                },
+                {
+                    data: 'discount_amount',
+                    name: 'discount_amount',
+                    className: 'text-center',
+                },
+                {
+                    data: 'return_amount',
+                    name: 'return_amount',
+                    className: 'text-center',
+                },
+            ]
+            const url = $('#passenger_list_url').val();
+            console.log('url', url)
+            if ($.fn.DataTable.isDataTable('#passenger_datatable')) {
+                $('#passenger_datatable').DataTable().destroy();
+            }
+
+            const data = {};
+
+            $('#passenger_datatable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: url,
+                    type: "GET",
+                    data: data
+                },
+                columns: columns,
+                paging: true,
+                searching: true,
+                ordering: true,
+                info: true,
+                lengthMenu: [10, 25, 50, 100],
+                dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-end"Bf>>' +
+                    'rtip',
+                buttons: [{
+                    extend: 'csv',
+                    text: 'Export CSV',
+                    className: 'btn btn-primary',
+                    exportOptions: typeof exportOptions !== 'undefined' && exportOptions ?
+                        exportOptions : {}
+                }]
+            }).on('draw', function() {
+                $('.bootstrap4-toggle').bootstrapToggle();
+            });
+        }
 
         $(document).ready(function() {
             agentDatatable();
+            passengerDatatable();
         });
     </script>
 
@@ -212,23 +308,28 @@
                 },
                 {
                     data: 'contact_amount',
-                    name: 'contact_amount'
+                    name: 'contact_amount',
+                    className: 'text-center',
                 },
                 {
                     data: 'deposit_amount',
-                    name: 'deposit_amount'
+                    name: 'deposit_amount',
+                    className: 'text-center',
                 },
                 {
                     data: 'due_amount',
-                    name: 'due_amount'
+                    name: 'due_amount',
+                    className: 'text-center',
                 },
                 {
                     data: 'discount_amount',
-                    name: 'discount_amount'
+                    name: 'discount_amount',
+                    className: 'text-center',
                 },
                 {
                     data: 'return_amount',
-                    name: 'return_amount'
+                    name: 'return_amount',
+                    className: 'text-center',
                 },
             ]
             const url = $('#paid_list_url').val();
@@ -268,23 +369,28 @@
                 },
                 {
                     data: 'contact_amount',
-                    name: 'contact_amount'
+                    name: 'contact_amount',
+                    className: 'text-center',
                 },
                 {
                     data: 'deposit_amount',
-                    name: 'deposit_amount'
+                    name: 'deposit_amount',
+                    className: 'text-center',
                 },
                 {
                     data: 'due_amount',
-                    name: 'due_amount'
+                    name: 'due_amount',
+                    className: 'text-center',
                 },
                 {
                     data: 'discount_amount',
-                    name: 'discount_amount'
+                    name: 'discount_amount',
+                    className: 'text-center',
                 },
                 {
                     data: 'return_amount',
-                    name: 'return_amount'
+                    name: 'return_amount',
+                    className: 'text-center',
                 },
             ]
             const url = $('#unpaid_list_url').val();

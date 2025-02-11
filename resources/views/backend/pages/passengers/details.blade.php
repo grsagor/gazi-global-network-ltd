@@ -10,7 +10,7 @@
                     <div class="card-header d-flex justify-content-between">
                         <h3>Passenger Details</h3>
                         <div>
-                            <button type="button" class="btn btn-sm btn-primary" id="exportCsvBtn">exportCsvBtn</button>
+                            <button type="button" class="btn btn-sm btn-primary" id="exportCsvBtn">Export To CSV</button>
                             <button type="button" data-id="{{ $passenger->id }}"
                                 class="btn btn-sm btn-primary crudEditBtn">Edit</button>
                         </div>
@@ -70,22 +70,22 @@
 
                         <div class="row mb-3">
                             <div class="col-md-6"><strong>Contact Amount:</strong></div>
-                            <div class="col-md-6">{{ $passenger->contact_amount ?? 'N/A' }}</div>
+                            <div class="col-md-6">{{ $passenger->contact_amount ? intval($passenger->contact_amount) : 'N/A' }}</div>
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-md-6"><strong>Deposit Amount:</strong></div>
-                            <div class="col-md-6">{{ $passenger->deposit_amount ?? 'N/A' }}</div>
+                            <div class="col-md-6">{{ $passenger->deposit_amount ? intval($passenger->deposit_amount) : 'N/A' }}</div>
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-md-6"><strong>Due Amount:</strong></div>
-                            <div class="col-md-6">{{ $passenger->due_amount ?? 'N/A' }}</div>
+                            <div class="col-md-6">{{ $passenger->due_amount ? intval($passenger->due_amount) : 'N/A' }}</div>
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-md-6"><strong>Discount Amount:</strong></div>
-                            <div class="col-md-6">{{ $passenger->discount_amount ?? 'N/A' }}</div>
+                            <div class="col-md-6">{{ $passenger->discount_amount ? intval($passenger->discount_amount) : 'N/A' }}</div>
                         </div>
 
                         <!-- Displaying Images and Files -->

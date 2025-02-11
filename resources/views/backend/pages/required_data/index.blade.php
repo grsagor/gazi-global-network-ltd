@@ -95,6 +95,7 @@
 
         </div>
     </div>
+    @if (Auth::user()->role == 1)
     <div class="card p-5 mb-3">
         <div class="head-label">
             <h5 class="card-title mb-0">New Required Data</h5>
@@ -112,6 +113,7 @@
             </div>
         </form>
     </div>
+    @endif
 @endsection
 
 @section('js')

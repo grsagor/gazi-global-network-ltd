@@ -9,11 +9,11 @@
         </ul>
     </div> --}}
 
-    <pre>
+    {{-- <pre>
         <?php
             print_r($errors);
             ?>
-    </pre>
+    </pre> --}}
 @endif
 
     <div class="container-xxl">

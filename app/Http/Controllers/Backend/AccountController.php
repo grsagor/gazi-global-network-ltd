@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Passenger;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 
@@ -14,15 +15,23 @@ class AccountController extends Controller
 
     public function index()
     {
+        $user = Auth::user();
         $total_contact_amount = Passenger::sum('contact_amount');
         $total_deposit_amount = Passenger::sum('deposit_amount');
         $total_due_amount = Passenger::sum('due_amount');
         $total_discount_amount = Passenger::sum('discount_amount');
+        if ($user->role == 2) {
+            $total_contact_amount = Passenger::where('agent_id', $user->id)->sum('contact_amount');
+            $total_deposit_amount = Passenger::where('agent_id', $user->id)->sum('deposit_amount');
+            $total_due_amount = Passenger::where('agent_id', $user->id)->sum('due_amount');
+            $total_discount_amount = Passenger::where('agent_id', $user->id)->sum('discount_amount');
+        }
         $data = [
-            'total_contact_amount' => $total_contact_amount,
-            'total_deposit_amount' => $total_deposit_amount,
-            'total_due_amount' => $total_due_amount,
-            'total_discount_amount' => $total_discount_amount,
+            'total_contact_amount' => intval($total_contact_amount),
+            'total_deposit_amount' => intval($total_deposit_amount),
+            'total_due_amount' => intval($total_due_amount),
+            'total_discount_amount' => intval($total_discount_amount),
+            'user' => $user,
         ];
         return view('backend.pages.accounts.index', $data);
     }
@@ -70,28 +79,67 @@ class AccountController extends Controller
             })
             ->addColumn('contact_amount', function ($row) {
                 $amount = Passenger::where('agent_id', $row->id)->sum('contact_amount');
-                return $amount;
+                return intval($amount);
             })
             ->addColumn('deposit_amount', function ($row) {
                 $amount = Passenger::where('agent_id', $row->id)->sum('deposit_amount');
-                return $amount;
+                return intval($amount);
             })
             ->addColumn('due_amount', function ($row) {
                 $amount = Passenger::where('agent_id', $row->id)->sum('due_amount');
-                return $amount;
+                return intval($amount);
             })
             ->addColumn('discount_amount', function ($row) {
                 $amount = Passenger::where('agent_id', $row->id)->sum('discount_amount');
-                return $amount;
+                return intval($amount);
             })
             ->addColumn('return_amount', function ($row) {
                 $amount = Passenger::where('agent_id', $row->id)->sum('return_amount');
-                return $amount;
+                return intval($amount);
             })
             ->rawColumns(['name'])
             ->make(true);
     }
+    public function passengerList(Request $request)
+    {
+        $user = Auth::user();
+        $query = Passenger::query();
 
+        if ($user->role == 2) {
+            $query->where('agent_id', $user->id);
+        }
+
+        $data = $query->get();
+
+        return DataTables::of($data)
+            ->addColumn('name', function ($row) {
+                $html = '';
+                $html .= '<a href="' . route('admin.passengers.details', ['id' => $row->id]) . '">' . $row->name . '</a>';
+                return $html;
+            })
+            ->editColumn('contact_amount', function ($row) {
+                $amount = $row->contact_amount ?? 0;
+                return intval($amount);
+            })
+            ->editColumn('deposit_amount', function ($row) {
+                $amount = $row->deposit_amount ?? 0;
+                return intval($amount);
+            })
+            ->editColumn('due_amount', function ($row) {
+                $amount = $row->due_amount ?? 0;
+                return intval($amount);
+            })
+            ->editColumn('discount_amount', function ($row) {
+                $amount = $row->discount_amount ?? 0;
+                return intval($amount);
+            })
+            ->editColumn('return_amount', function ($row) {
+                $amount = $row->return_amount ?? 0;
+                return intval($amount);
+            })
+            ->rawColumns(['name'])
+            ->make(true);
+    }
     public function agentDetails($id)
     {
         $total_contact_amount = Passenger::where('agent_id', $id)->sum('contact_amount');
@@ -149,23 +197,23 @@ class AccountController extends Controller
             })
             ->addColumn('contact_amount', function ($row) {
                 $amount = Passenger::where('agent_id', $row->id)->sum('contact_amount');
-                return $amount;
+                return intval($amount);
             })
             ->addColumn('deposit_amount', function ($row) {
                 $amount = Passenger::where('agent_id', $row->id)->sum('deposit_amount');
-                return $amount;
+                return intval($amount);
             })
             ->addColumn('due_amount', function ($row) {
                 $amount = Passenger::where('agent_id', $row->id)->sum('due_amount');
-                return $amount;
+                return intval($amount);
             })
             ->addColumn('discount_amount', function ($row) {
                 $amount = Passenger::where('agent_id', $row->id)->sum('discount_amount');
-                return $amount;
+                return intval($amount);
             })
             ->addColumn('return_amount', function ($row) {
                 $amount = Passenger::where('agent_id', $row->id)->sum('return_amount');
-                return $amount;
+                return intval($amount);
             })
             ->rawColumns(['name'])
             ->make(true);
@@ -188,23 +236,23 @@ class AccountController extends Controller
             })
             ->addColumn('contact_amount', function ($row) {
                 $amount = Passenger::where('agent_id', $row->id)->sum('contact_amount');
-                return $amount;
+                return intval($amount);
             })
             ->addColumn('deposit_amount', function ($row) {
                 $amount = Passenger::where('agent_id', $row->id)->sum('deposit_amount');
-                return $amount;
+                return intval($amount);
             })
             ->addColumn('due_amount', function ($row) {
                 $amount = Passenger::where('agent_id', $row->id)->sum('due_amount');
-                return $amount;
+                return intval($amount);
             })
             ->addColumn('discount_amount', function ($row) {
                 $amount = Passenger::where('agent_id', $row->id)->sum('discount_amount');
-                return $amount;
+                return intval($amount);
             })
             ->addColumn('return_amount', function ($row) {
                 $amount = Passenger::where('agent_id', $row->id)->sum('return_amount');
-                return $amount;
+                return intval($amount);
             })
             ->rawColumns(['name'])
             ->make(true);

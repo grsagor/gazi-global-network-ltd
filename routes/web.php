@@ -64,6 +64,7 @@ Route::middleware('checkLogin')->group(function () {
             Route::get('', 'index')->name('admin.accounts.index');
             Route::get('/list', 'list')->name('admin.accounts.list');
             Route::get('/agent/list', 'agentList')->name('admin.accounts.agent.list');
+            Route::get('/passenger/list', 'passengerList')->name('admin.accounts.passenger.list');
             Route::get('/agent/{id}', 'agentDetails')->name('admin.accounts.agent.details');
             Route::get('/print', 'agentPrint')->name('admin.accounts.agent.print');
 
