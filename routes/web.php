@@ -33,6 +33,7 @@ Route::middleware('checkLogin')->group(function () {
         });
         Route::prefix('users')->controller(AgentController::class)->group(function () {
             Route::get('/{role}', 'index')->name('admin.agents.index');
+            Route::get('/all-csv/{role}', 'allCsv')->name('admin.agents.all.csv');
             Route::get('/list/{role}', 'list')->name('admin.agents.list');
             Route::get('/create/{role}', 'create')->name('admin.agents.create');
             Route::post('/store/{role}', 'store')->name('admin.agents.store');
@@ -44,6 +45,7 @@ Route::middleware('checkLogin')->group(function () {
         });
         Route::prefix('passengers')->controller(PassengerController::class)->group(function () {
             Route::get('/', 'index')->name('admin.passengers.index');
+            Route::get('/all-csv', 'allCsv')->name('admin.passengers.all.csv');
             Route::get('/list', 'list')->name('admin.passengers.list');
             Route::get('/print', 'print')->name('admin.passengers.print');
             Route::get('/create', 'create')->name('admin.passengers.create');

@@ -106,8 +106,10 @@ class AgentController extends Controller
             'email' => 'required|email|unique:users,email',
             'phone' => 'required|string|max:15',
             'password' => 'required|string|min:6',
-            'rating' => 'required|string|max:11',
+            'rating' => 'nullable|string|max:11',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'company' => 'required',
+            'nid' => 'required',
         ]);
         try {
             DB::beginTransaction();
@@ -175,6 +177,8 @@ class AgentController extends Controller
             'password' => 'nullable|string|min:6',
             'rating' => 'nullable|string',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'company' => 'required',
+            'nid' => 'required',
         ]);
 
         try {
@@ -279,4 +283,81 @@ class AgentController extends Controller
         }
     }
     
+    public function allCsv(Request $request, $role)
+    {
+        $query = User::query();
+        if ($request->agent_id) {
+            $sub_agent_ids = AgentSubagent::where('agent_id', $request->agent_id)->pluck('sub_agent_id');
+            $query->whereIn('id', $sub_agent_ids);
+        } elseif (Auth::user()->role == 2) {
+            $sub_agent_ids = AgentSubagent::where('agent_id', Auth::user()->id)->pluck('sub_agent_id');
+            $query->whereIn('id', $sub_agent_ids);
+        }
+
+        $data = $query->where('role', $role)->get();
+
+        // Status Mapping
+        $statusMapping = [
+            1 => "Active",
+            0 => "Inactive",
+        ];
+        $roleMapping = [
+            1 => "Admin",
+            2 => "Agent",
+            3 => "Sub Agent",
+        ];
+        $user_count = 0;
+        $csv_data = $data->map(function ($user) use ($statusMapping, $roleMapping, $user_count) {
+            $agent_id = 'N/A';
+            if ($user->role == 3) {
+                echo $user->id;
+                $agent_id = AgentSubagent::where('sub_agent_id', $user->id)->first()->agent_id;
+            }
+            $user_count = $user_count + 1;
+            return [
+                $user_count,
+                $user->id,
+                $user->first_name . ' ' . $user->last_name,
+                $agent_id,
+                $user->father_name,
+                $user->nid,
+                $user->passport,
+                $user->company,
+                $user->category,
+                $user->rating,
+                $user->note,
+                $user->phone,
+                $roleMapping[$user->role],
+                $user->profile_image ? env('APP_URL') . '/' . $user->profile_image : 'N/A', // link
+                $statusMapping[$user->status] ?? 'Unknown'
+            ];
+        });
+        // Define CSV column headers
+        $columns = [
+            "SI",
+            "ID",
+            "Name",
+            "Agent ID",
+            "Father Name",
+            "NID No",
+            "Passport No",
+            "Company Name",
+            "Category",
+            "Rating",
+            "Note",
+            "Phone Number",
+            "User Role",
+            "Profile Image (Link)",
+            "Status"
+        ];
+        
+
+
+        $response = [
+            'success' => true,
+            'columns' => $columns,
+            'data' => $csv_data
+        ];
+        return response()->json($response);
+    }
 }

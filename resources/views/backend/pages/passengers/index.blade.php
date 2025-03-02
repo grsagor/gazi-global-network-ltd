@@ -153,6 +153,48 @@
             } // Action buttons
         ]
 
+        function initializeDatatable(data) {
+            const url = $('#list_url').val();
+            if ($.fn.DataTable.isDataTable('#datatable')) {
+                $('#datatable').DataTable().destroy();
+            }
+
+            try {
+                $('#datatable').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: {
+                        url: url,
+                        type: "GET",
+                        data: data
+                    },
+                    columns: columns,
+                    paging: true,
+                    searching: true,
+                    ordering: true,
+                    info: true,
+                    lengthMenu: [10, 25, 50, 100], // Define the "per page" options
+                    dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-end"Bf>>' +
+                        // Buttons next to search box
+                        'rtip', // Buttons, table (t), pagination (p), info (i)
+                    buttons: [{
+                        extend: 'csv',
+                        text: 'Export CSV', // Button text
+                        className: 'btn btn-primary', // Add a custom class for styling
+                        // exportOptions: typeof exportOptions !== 'undefined' && exportOptions ? exportOptions : {}
+                        action: function(e, dt, button, config) {
+                            const url = "{{ route('admin.passengers.all.csv') }}";
+                            exportToCSV(url, 'passengers.csv');
+                        }
+                    }]
+                }).on('draw', function() {
+                    $('.bootstrap4-toggle').bootstrapToggle();
+                });
+            } catch (error) {
+                console.log('error', error)
+            }
+        }
+
         $(document).ready(function() {
             $('#filter_btn').click(function() {
                 const name = $('#filter_name').val();
@@ -173,7 +215,7 @@
                     status
                 }
                 initializeDatatable(data);
-            })
+            });
         });
 
         $('#clear_btn').click(function() {

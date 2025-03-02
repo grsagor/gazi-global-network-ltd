@@ -253,3 +253,41 @@ function previewImages(event) {
         reader.readAsDataURL(file); // Read the file and trigger onload
     }
 }
+
+function exportToCSV(url, filename = "export.csv") {
+
+
+
+    $.ajax({
+        url: url,
+        type: 'get',
+        success: function (response) {
+            console.log('response', response)
+            if (response.success) {
+                const columns = response.columns;
+                const data = response.data;
+                let csvContent = "data:text/csv;charset=utf-8,";
+
+                // Add headers
+                csvContent += columns.map(col => `"${col}"`).join(",") + "\n";
+            
+                // Add data rows
+                data.forEach(row => {
+                    csvContent += row.map(value => `"${value}"`).join(",") + "\n";
+                });
+            
+                // Encode and download the CSV file
+                let encodedUri = encodeURI(csvContent);
+                let link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", filename);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        },
+        error: function (xhr, status, error) {
+            
+        }
+    });
+}

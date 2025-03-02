@@ -142,6 +142,7 @@ class AccountController extends Controller
     }
     public function agentDetails($id)
     {
+        $agent = User::find($id);
         $total_contact_amount = Passenger::where('agent_id', $id)->sum('contact_amount');
         $total_deposit_amount = Passenger::where('agent_id', $id)->sum('deposit_amount');
         $total_due_amount = Passenger::where('agent_id', $id)->sum('due_amount');
@@ -154,6 +155,7 @@ class AccountController extends Controller
             'total_discount_amount' => $total_discount_amount,
             'total_return_amount' => $total_return_amount,
             'id' => $id,
+            'agent' => $agent,
         ];
         return view('backend.pages.accounts.details', $data);
     }

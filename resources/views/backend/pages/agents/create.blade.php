@@ -54,12 +54,12 @@
                 <div class="mb-3">
                     <label for="category" class="form-label">Category</label>
                     <input type="text" class="form-control" id="category" name="category"
-                        placeholder="Enter category" required>
+                        placeholder="Enter category">
                 </div>
                 <div class="mb-3">
                     <label for="rating" class="form-label">Rating</label>
                     <input type="text" class="form-control" id="rating" name="rating"
-                        placeholder="Enter rating" required>
+                        placeholder="Enter rating">
                 </div>
                 <div class="mb-3">
                     <label for="note" class="form-label">Note</label>

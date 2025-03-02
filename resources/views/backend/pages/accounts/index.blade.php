@@ -143,6 +143,7 @@
             <thead>
                 <tr>
                     <th>Name</th>
+                    <th>Passport No.</th>
                     <th>Contact Amount</th>
                     <th>Deposit Amount</th>
                     <th>Due Amount</th>
@@ -231,6 +232,10 @@
             const columns = [{
                     data: 'name',
                     name: 'name'
+                },
+                {
+                    data: 'passport_no',
+                    name: 'passport_no',
                 },
                 {
                     data: 'contact_amount',

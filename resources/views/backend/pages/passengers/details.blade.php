@@ -17,6 +17,11 @@
                     </div>
                     <div class="card-body">
                         <div class="row mb-3">
+                            <div class="col-md-6"><strong>Agent:</strong></div>
+                            <div class="col-md-6">{{ $passenger->agent->first_name }} {{ $passenger->agent->last_name }}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
                             <div class="col-md-6"><strong>Name:</strong></div>
                             <div class="col-md-6">{{ $passenger->name }}</div>
                         </div>
@@ -41,6 +46,16 @@
                             <div class="col-md-6">
                                 {{ $passenger->passport_expire_date ? \Carbon\Carbon::parse($passenger->passport_expire_date)->format('d-m-Y') : 'N/A' }}
                             </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6"><strong>PCC Number:</strong></div>
+                            <div class="col-md-6">{{ $passenger->pcc_number ?? 'N/A' }}</div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6"><strong>PCC Issue Date:</strong></div>
+                            <div class="col-md-6">{{ $passenger->pcc_issue_date ?? 'N/A' }}</div>
                         </div>
 
                         <div class="row mb-3">
@@ -70,74 +85,91 @@
 
                         <div class="row mb-3">
                             <div class="col-md-6"><strong>Contact Amount:</strong></div>
-                            <div class="col-md-6">{{ $passenger->contact_amount ? intval($passenger->contact_amount) : 'N/A' }}</div>
+                            <div class="col-md-6">
+                                {{ $passenger->contact_amount ? intval($passenger->contact_amount) : 'N/A' }}</div>
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-md-6"><strong>Deposit Amount:</strong></div>
-                            <div class="col-md-6">{{ $passenger->deposit_amount ? intval($passenger->deposit_amount) : 'N/A' }}</div>
+                            <div class="col-md-6">
+                                {{ $passenger->deposit_amount ? intval($passenger->deposit_amount) : 'N/A' }}</div>
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-md-6"><strong>Due Amount:</strong></div>
-                            <div class="col-md-6">{{ $passenger->due_amount ? intval($passenger->due_amount) : 'N/A' }}</div>
+                            <div class="col-md-6">{{ $passenger->due_amount ? intval($passenger->due_amount) : 'N/A' }}
+                            </div>
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-md-6"><strong>Discount Amount:</strong></div>
-                            <div class="col-md-6">{{ $passenger->discount_amount ? intval($passenger->discount_amount) : 'N/A' }}</div>
+                            <div class="col-md-6">
+                                {{ $passenger->discount_amount ? intval($passenger->discount_amount) : 'N/A' }}</div>
                         </div>
 
                         <!-- Displaying Images and Files -->
-                        @if ($passenger->image_upload)
-                            <div class="row mb-3">
-                                <div class="col-md-6"><strong>Image Upload:</strong></div>
-                                <div class="col-md-6">
+
+                        <div class="row mb-3">
+                            <div class="col-md-6"><strong>Image Upload:</strong></div>
+                            <div class="col-md-6">
+                                @if ($passenger->image_upload)
                                     <img src="{{ asset($passenger->image_upload) }}" alt="Passenger Image"
                                         class="img-fluid" style="max-width: 200px;">
-                                </div>
+                                @else
+                                    <p class="error-message text-danger">No file uploaded for this field.</p>
+                                @endif
                             </div>
-                        @endif
+                        </div>
 
-                        @if ($passenger->pdf_upload)
-                            <div class="row mb-3">
-                                <div class="col-md-6"><strong>PDF Upload:</strong></div>
-                                <div class="col-md-6">
+                        <div class="row mb-3">
+                            <div class="col-md-6"><strong>PDF Upload:</strong></div>
+                            <div class="col-md-6">
+
+                                @if ($passenger->pdf_upload)
                                     <a href="{{ asset($passenger->pdf_upload) }}" target="_blank" class="btn btn-info">View
                                         PDF</a>
-                                </div>
+                                @else
+                                    <p class="error-message text-danger">No file uploaded for this field.</p>
+                                @endif
                             </div>
-                        @endif
+                        </div>
 
-                        @if ($passenger->payment_doc_upload)
-                            <div class="row mb-3">
-                                <div class="col-md-6"><strong>Payment Document Upload:</strong></div>
-                                <div class="col-md-6">
+                        <div class="row mb-3">
+                            <div class="col-md-6"><strong>Payment Document Upload:</strong></div>
+                            <div class="col-md-6">
+                                @if ($passenger->payment_doc_upload)
                                     <a href="{{ asset($passenger->payment_doc_upload) }}" target="_blank"
                                         class="btn btn-info">View Payment Doc</a>
-                                </div>
+                                @else
+                                    <p class="error-message text-danger">No file uploaded for this field.</p>
+                                @endif
                             </div>
-                        @endif
+                        </div>
 
-                        @if ($passenger->passport_info_upload)
-                            <div class="row mb-3">
-                                <div class="col-md-6"><strong>Passport Info Upload:</strong></div>
-                                <div class="col-md-6">
+                        <div class="row mb-3">
+                            <div class="col-md-6"><strong>Passport Info Upload:</strong></div>
+                            <div class="col-md-6">
+                                @if ($passenger->passport_info_upload)
                                     <a href="{{ asset($passenger->passport_info_upload) }}" target="_blank"
                                         class="btn btn-info">View Passport Info</a>
-                                </div>
+                                @else
+                                    <p class="error-message text-danger">No file uploaded for this field.</p>
+                                @endif
                             </div>
-                        @endif
+                        </div>
 
-                        @if ($passenger->pcc_upload)
-                            <div class="row mb-3">
-                                <div class="col-md-6"><strong>PCC Upload:</strong></div>
-                                <div class="col-md-6">
-                                    <a href="{{ asset($passenger->pcc_upload) }}" target="_blank" class="btn btn-info">View
+                        <div class="row mb-3">
+                            <div class="col-md-6"><strong>PCC Upload:</strong></div>
+                            <div class="col-md-6">
+                                @if ($passenger->pcc_upload)
+                                    <a href="{{ asset($passenger->pcc_upload) }}" target="_blank"
+                                        class="btn btn-info">View
                                         PCC</a>
-                                </div>
+                                @else
+                                    <p class="error-message text-danger">No file uploaded for this field.</p>
+                                @endif
                             </div>
-                        @endif
+                        </div>
 
                     </div>
                 </div>
@@ -156,7 +188,8 @@
         document.addEventListener("DOMContentLoaded", function() {
             document.getElementById("exportCsvBtn").addEventListener("click", function() {
                 let passengers = [
-                @json($passenger)]; // Ensure you pass the passengers data to the view
+                    @json($passenger)
+                ]; // Ensure you pass the passengers data to the view
                 let csvContent = "data:text/csv;charset=utf-8,";
 
                 // CSV Header

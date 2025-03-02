@@ -84,15 +84,6 @@
                         placeholder="Enter Company Name" required>
                 </div>
                 <div class="mb-3">
-                    <label for="application_status" class="form-label">Application Status</label>
-                    <select class="form-select" id="application_status" name="application_status" required>
-                        <option value="" selected disabled>Choose...</option>
-                        <option value="pending">Pending</option>
-                        <option value="approved">Approved</option>
-                        <option value="rejected">Rejected</option>
-                    </select>
-                </div>
-                <div class="mb-3">
                     <label for="contact_amount" class="form-label">Contact Amount</label>
                     <input type="number" class="form-control" id="contact_amount" name="contact_amount"
                         placeholder="Enter Contact Amount" required>
@@ -128,13 +119,6 @@
                     <label for="payment_doc_upload" class="form-label">Payment Doc Upload</label>
                     <input type="file" class="form-control" id="payment_doc_upload" name="payment_doc_upload"
                         accept="application/pdf">
-                </div>
-                <div class="mb-3">
-                    <label for="status" class="form-label">Status</label>
-                    <select name="status" id="status" class="form-control">
-                        <option value="1">Active</option>
-                        <option value="0">Inactive</option>
-                    </select>
                 </div>
             </form>
         </div>

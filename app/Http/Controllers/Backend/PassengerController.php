@@ -18,6 +18,100 @@ class PassengerController extends Controller
     {
         return view('backend.pages.passengers.index');
     }
+    public function allCsv()
+    {
+        $user = Auth::user();
+        $query = Passenger::query();
+        if ($user->role == 2) {
+            $query->where('agent_id', $user->id);
+        }
+        if ($user->role == 3) {
+            $agent_ids = AgentSubagent::where('sub_agent_id', $user->id)->pluck('agent_id');
+            $query->whereIn('agent_id', $agent_ids);
+        }
+        $passengers = $query->orderBy('created_at', 'desc')->get();
+
+        // Status Mapping
+        $statusMapping = [
+            1 => "Request for onlist",
+            2 => "Onlisted",
+            3 => "Not submitted",
+            4 => "Submitted",
+            5 => "Pending",
+            6 => "Ready for submission",
+            7 => "Additional docs required",
+            8 => "Hold",
+            9 => "Permit",
+            10 => "Stamping done",
+            11 => "Rejected",
+            12 => "Resubmit",
+            13 => "Return"
+        ];
+        $passenger_count = 0;
+        $csv_data = $passengers->map(function ($passenger) use ($statusMapping, $passenger_count) {
+            return [
+                ++$passenger_count,
+                $passenger->id,
+                $passenger->name,
+                $passenger->agent_id,
+                $passenger->father_name,
+                $passenger->nid_no,
+                $passenger->passport_no,
+                $passenger->passport_expire_date,
+                $passenger->passport_info_upload ? env('APP_URL') . '/' . $passenger->passport_info_upload : 'N/A', // link
+                $passenger->pcc_number,
+                $passenger->pcc_issue_date,
+                $passenger->pcc_upload ? env('APP_URL') . '/' . $passenger->pcc_upload : 'N/A', // link
+                $passenger->country_id,
+                $passenger->work_type,
+                $passenger->company_name,
+                $passenger->contact_amount,
+                $passenger->deposit_amount,
+                $passenger->due_amount,
+                $passenger->discount_amount,
+                $passenger->return_amount,
+                $passenger->image_upload ? env('APP_URL') . '/' . $passenger->image_upload : 'N/A', // link
+                $passenger->pdf_upload ? env('APP_URL') . '/' . $passenger->pdf_upload : 'N/A', // link
+                $passenger->payment_doc_upload ? env('APP_URL') . '/' . $passenger->payment_doc_upload : 'N/A', // link
+                $statusMapping[$passenger->status] ?? 'Unknown'
+            ];
+        });
+        // Define CSV column headers
+        $columns = [
+            "SI",
+            "ID",
+            "Name",
+            "Agent ID",
+            "Father Name",
+            "NID No",
+            "Passport No",
+            "Passport Expiry Date",
+            "Passport Info Upload (Link)",
+            "PCC Number",
+            "PCC Issue Date",
+            "PCC Upload (Link)",
+            "Country ID",
+            "Work Type",
+            "Company Name",
+            "Contract Amount",
+            "Deposit Amount",
+            "Due Amount",
+            "Discount Amount",
+            "Return Amount",
+            "Image Upload (Link)",
+            "PDF Upload (Link)",
+            "Payment Document Upload (Link)",
+            "Application Status"
+        ];
+
+
+        $response = [
+            'success' => true,
+            'columns' => $columns,
+            'data' => $csv_data
+        ];
+        return response()->json($response);
+    }
 
     public function details($id)
     {
@@ -47,25 +141,25 @@ class PassengerController extends Controller
         if ($request->name) {
             $query->where('name', 'like', '%' . $request->name . '%');
         }
-        
+
         if ($request->passport_no) {
             $query->where('passport_no', $request->passport_no);
         }
-        
+
         if ($request->country_id) {
             $query->where('country_id', $request->country_id);
         }
-        
+
         if ($request->company_name) {
             $query->where('company_name', $request->company_name);
         }
-        
+
         if ($request->agent_name) {
             $query->whereHas('agent', function ($agent) use ($request) {
                 $agent->where(DB::raw("CONCAT(first_name, ' ', last_name)"), 'like', '%' . $request->agent_name . '%');
             });
         }
-        
+
         if ($request->agent_id) {
             $query->where('agent_id', $request->agent_id);
         }
@@ -73,18 +167,18 @@ class PassengerController extends Controller
             $sub_agent = User::find($request->subagent_id);
             $query->where('agent_id', $sub_agent->agent_id());
         }
-        
+
         if ($request->status) {
             $query->where('status', $request->status);
         }
-        
+
 
         $data = $query->orderBy('created_at', 'desc')->get();
 
         return DataTables::of($data)
             ->editColumn('name', function ($row) {
                 $html = '';
-                $html .= '<a href="'.route('admin.passengers.details', ['id' => $row->id]).'" data-id="'.$row->id.'">'.$row->name.'</a>';
+                $html .= '<a href="' . route('admin.passengers.details', ['id' => $row->id]) . '" data-id="' . $row->id . '">' . $row->name . '</a>';
                 return $html;
             })
             ->editColumn('country_id', function ($row) {
@@ -95,7 +189,7 @@ class PassengerController extends Controller
             })
             ->editColumn('status', function ($row) use ($user) {
                 $html = '';
-                $html .= '<select data-id="'.$row->id.'" style="width: 223px;" class="form-select crudStatusBtn" aria-label="Default select example">';
+                $html .= '<select data-id="' . $row->id . '" style="width: 223px;" class="form-select crudStatusBtn" aria-label="Default select example">';
                 $html .= '<option ' . ($row->status == 7 ? "selected" : '') . ' value="7">Additional docs require</option>';
                 $html .= '<option ' . ($row->status == 8 ? "selected" : '') . ' value="8">Hold</option>';
                 $html .= '<option ' . ($row->status == 3 ? "selected" : '') . ' value="3">Not submitted</option>';
@@ -154,15 +248,14 @@ class PassengerController extends Controller
                         return 'Return';
                     }
                 }
-
             })
-            
+
             ->addColumn('action', function ($row) {
                 $html = '<div class="d-flex flex-wrap gap-2" style="width: 170px;">';
-                $html .= '<a href="'.route('admin.required_data.single.passenger', ['passenger_id' => $row->id]).'" class="btn btn-sm btn-info">Data</a>';
-                $html .= '<button type="button" data-id="'.$row->id.'" class="btn btn-sm btn-success crudPrintBtn">Print</button>';
-                $html .= '<button type="button" data-id="'.$row->id.'" class="btn btn-sm btn-primary crudEditBtn">Edit</button>';
-                $html .= '<button type="button" data-id="'.$row->id.'" class="btn btn-sm btn-danger crudDeleteBtn">Delete</button>';
+                $html .= '<a href="' . route('admin.required_data.single.passenger', ['passenger_id' => $row->id]) . '" class="btn btn-sm btn-info">Data</a>';
+                $html .= '<button type="button" data-id="' . $row->id . '" class="btn btn-sm btn-success crudPrintBtn">Print</button>';
+                $html .= '<button type="button" data-id="' . $row->id . '" class="btn btn-sm btn-primary crudEditBtn">Edit</button>';
+                $html .= '<button type="button" data-id="' . $row->id . '" class="btn btn-sm btn-danger crudDeleteBtn">Delete</button>';
                 $html .= '</div>';
                 return $html;
             })
@@ -185,9 +278,9 @@ class PassengerController extends Controller
             'name' => 'required|string|max:255',
             'agent_id' => 'required',
             'father_name' => 'required|string|max:255',
-            'nid_no' => 'nullable|string|max:20|unique:passengers,nid_no',
-            'passport_no' => 'nullable|string|max:20|unique:passengers,passport_no',
-            'passport_expire_date' => 'nullable|date',
+            'nid_no' => 'required|string|max:20|unique:passengers,nid_no',
+            'passport_no' => 'required|string|max:20|unique:passengers,passport_no',
+            'passport_expire_date' => 'required|date',
             'passport_info_upload' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048',
             'pcc_number' => 'nullable|string|max:50',
             'pcc_issue_date' => 'nullable|date',
@@ -215,11 +308,12 @@ class PassengerController extends Controller
                     $fileName = time() . '_' . $file->getClientOriginalName();
                     $file->move($destinationPath, $fileName);
                     $filePath = 'uploads/passengers/' . $fileName;
-                    $passenger->$key = $filePath;                    
+                    $passenger->$key = $filePath;
                 } else {
                     $passenger->$key = $value;
                 }
             }
+            $passenger->status = 5;
             $passenger->save();
 
             return response()->json(['success' => true, 'msg' => 'Passenger saved successfully']);
@@ -262,10 +356,10 @@ class PassengerController extends Controller
             'pdf_upload' => 'nullable|file|mimes:pdf|max:2048',
             'payment_doc_upload' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048',
         ]);
-    
+
         try {
             $passenger = Passenger::findOrFail($request->id);
-    
+
             foreach ($validated as $key => $value) {
                 if ($request->hasFile($key)) {
                     $file = $request->file($key);
@@ -273,32 +367,32 @@ class PassengerController extends Controller
                     $fileName = time() . '_' . $file->getClientOriginalName();
                     $file->move($destinationPath, $fileName);
                     $filePath = 'uploads/passengers/' . $fileName;
-    
+
                     // Delete the old file if it exists
                     if ($passenger->$key && file_exists(public_path($passenger->$key))) {
                         unlink(public_path($passenger->$key));
                     }
-    
+
                     $passenger->$key = $filePath;
                 } else {
                     $passenger->$key = $value;
                 }
             }
-    
+
             $passenger->save();
-    
+
             return response()->json(['success' => true, 'msg' => 'Passenger updated successfully']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'msg' => $e->getMessage()], 500);
         }
     }
-    
+
 
     public function delete(Request $request)
     {
         try {
             $passenger = Passenger::findOrFail($request->id);
-    
+
             // List all the file fields that need to be deleted
             $fileFields = [
                 'passport_info_upload',
@@ -307,17 +401,17 @@ class PassengerController extends Controller
                 'pdf_upload',
                 'payment_doc_upload'
             ];
-    
+
             // Loop through each file field and delete the corresponding file if it exists
             foreach ($fileFields as $field) {
                 if ($passenger->$field && file_exists(public_path($passenger->$field))) {
                     unlink(public_path($passenger->$field)); // Delete the file
                 }
             }
-    
+
             // Now delete the passenger record
             $passenger->delete();
-    
+
             return response()->json(['success' => true, 'msg' => 'Passenger deleted successfully']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'msg' => $e->getMessage()], 500);
@@ -329,11 +423,10 @@ class PassengerController extends Controller
             $passenger = Passenger::findOrFail($request->id);
             $passenger->status = $request->status;
             $passenger->save();
-    
+
             return response()->json(['success' => true, 'msg' => 'Status updated successfully']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'msg' => $e->getMessage()], 500);
         }
     }
-    
 }
