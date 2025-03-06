@@ -310,7 +310,6 @@ class AgentController extends Controller
         $csv_data = $data->map(function ($user) use ($statusMapping, $roleMapping, $user_count) {
             $agent_id = 'N/A';
             if ($user->role == 3) {
-                echo $user->id;
                 $agent_id = AgentSubagent::where('sub_agent_id', $user->id)->first()->agent_id;
             }
             $user_count = $user_count + 1;
