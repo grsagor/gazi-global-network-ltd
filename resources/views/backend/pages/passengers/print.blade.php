@@ -55,24 +55,30 @@
             <div class="col-md-6">{{ $passenger->application_status ?? 'N/A' }}</div>
         </div>
 
-        <div class="row mb-3">
-            <div class="col-md-6"><strong>Contact Amount:</strong></div>
-            <div class="col-md-6">{{ $passenger->contact_amount ?? 'N/A' }}</div>
-        </div>
+        @if (Auth::user()->role != 3)
+            <div class="row mb-3">
+                <div class="col-md-6"><strong>Contact Amount:</strong></div>
+                <div class="col-md-6">{{ intval($passenger->contact_amount) ?? '0' }}</div>
+            </div>
 
-        <div class="row mb-3">
-            <div class="col-md-6"><strong>Deposit Amount:</strong></div>
-            <div class="col-md-6">{{ $passenger->deposit_amount ?? 'N/A' }}</div>
-        </div>
+            <div class="row mb-3">
+                <div class="col-md-6"><strong>Deposit Amount:</strong></div>
+                <div class="col-md-6">{{ intval($passenger->deposit_amount) ?? '0' }}</div>
+            </div>
 
-        <div class="row mb-3">
-            <div class="col-md-6"><strong>Due Amount:</strong></div>
-            <div class="col-md-6">{{ $passenger->due_amount ?? 'N/A' }}</div>
-        </div>
+            <div class="row mb-3">
+                <div class="col-md-6"><strong>Due Amount:</strong></div>
+                <div class="col-md-6">{{ intval($passenger->due_amount) ?? '0' }}</div>
+            </div>
 
-        <div class="row mb-3">
-            <div class="col-md-6"><strong>Discount Amount:</strong></div>
-            <div class="col-md-6">{{ $passenger->discount_amount ?? 'N/A' }}</div>
-        </div>
+            <div class="row mb-3">
+                <div class="col-md-6"><strong>Discount Amount:</strong></div>
+                <div class="col-md-6">{{ intval($passenger->discount_amount) ?? '0' }}</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6"><strong>Return Amount:</strong></div>
+                <div class="col-md-6">{{ intval($passenger->return_amount) ?? '0' }}</div>
+            </div>
+        @endif
     </div>
 </div>

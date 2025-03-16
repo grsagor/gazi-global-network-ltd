@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Passenger;
 use App\Models\RequiredData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -57,6 +58,11 @@ class RequiredDataController extends Controller
         try {
             DB::beginTransaction();
             $required_data = RequiredData::findOrFail($data_id);
+            $passenger_id = $required_data->passenger_id;
+
+            $passenger = Passenger::find($passenger_id);
+            $passenger->status = 14;
+            $passenger->save();
             $required_data->submitted_text = $validated['submitted_text_' . $data_id] ? $validated['submitted_text_' . $data_id] : $required_data->submitted_text;
 
             $files = [];

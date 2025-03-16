@@ -62,75 +62,75 @@
             </div>
         </div>
         @if ($user->role == 1)
-        <div class="row">
-            <div class="col-6 overflow-hidden">
-                <div class="card overflow-auto">
-                    <input type="hidden" id="agent_list_url" value="{{ route('admin.accounts.agent.list') }}">
-                    <div class="datatable-header flex-column flex-md-row pb-0">
-                        <div class="head-label text-center">
-                            <h5 class="card-title mb-0">Top Paid Agents</h5>
+            <div class="row">
+                <div class="col-6 overflow-hidden">
+                    <div class="card overflow-auto">
+                        <input type="hidden" id="agent_list_url" value="{{ route('admin.accounts.agent.list') }}">
+                        <div class="datatable-header flex-column flex-md-row pb-0">
+                            <div class="head-label text-center">
+                                <h5 class="card-title mb-0">Top Paid Agents</h5>
+                            </div>
                         </div>
+                        <table id="paid_datatable" class="table table-hover" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Contact Amount</th>
+                                    <th>Deposit Amount</th>
+                                    <th>Due Amount</th>
+                                    <th>Discount Amount</th>
+                                    <th>Return Amount</th>
+                                </tr>
+                            </thead>
+                        </table>
                     </div>
-                    <table id="paid_datatable" class="table table-hover" style="width:100%">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Contact Amount</th>
-                                <th>Deposit Amount</th>
-                                <th>Due Amount</th>
-                                <th>Discount Amount</th>
-                                <th>Return Amount</th>
-                            </tr>
-                        </thead>
-                    </table>
+                </div>
+                <div class="col-6 overflow-hidden">
+                    <div class="card overflow-auto">
+                        <input type="hidden" id="agent_list_url" value="{{ route('admin.accounts.agent.list') }}">
+                        <div class="datatable-header flex-column flex-md-row pb-0">
+                            <div class="head-label text-center">
+                                <h5 class="card-title mb-0">Top Unpaid Agents</h5>
+                            </div>
+                        </div>
+                        <table id="unpaid_datatable" class="table table-hover overflow-x-auto" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Contact Amount</th>
+                                    <th>Deposit Amount</th>
+                                    <th>Due Amount</th>
+                                    <th>Discount Amount</th>
+                                    <th>Return Amount</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
                 </div>
             </div>
-            <div class="col-6 overflow-hidden">
-                <div class="card overflow-auto">
-                    <input type="hidden" id="agent_list_url" value="{{ route('admin.accounts.agent.list') }}">
-                    <div class="datatable-header flex-column flex-md-row pb-0">
-                        <div class="head-label text-center">
-                            <h5 class="card-title mb-0">Top Unpaid Agents</h5>
-                        </div>
-                    </div>
-                    <table id="unpaid_datatable" class="table table-hover overflow-x-auto" style="width:100%">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Contact Amount</th>
-                                <th>Deposit Amount</th>
-                                <th>Due Amount</th>
-                                <th>Discount Amount</th>
-                                <th>Return Amount</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
-            </div>
-        </div>
         @endif
     </div>
     @if ($user->role == 1)
-    <div class="card mb-5">
-        <input type="hidden" id="agent_list_url" value="{{ route('admin.accounts.agent.list') }}">
-        <div class="datatable-header flex-column flex-md-row pb-0">
-            <div class="head-label text-center">
-                <h5 class="card-title mb-0">Agent Accounts</h5>
+        <div class="card mb-5">
+            <input type="hidden" id="agent_list_url" value="{{ route('admin.accounts.agent.list') }}">
+            <div class="datatable-header flex-column flex-md-row pb-0">
+                <div class="head-label text-center">
+                    <h5 class="card-title mb-0">Agent Accounts</h5>
+                </div>
             </div>
+            <table id="agent_datatable" class="table table-hover" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Contact Amount</th>
+                        <th>Deposit Amount</th>
+                        <th>Due Amount</th>
+                        <th>Discount Amount</th>
+                        <th>Return Amount</th>
+                    </tr>
+                </thead>
+            </table>
         </div>
-        <table id="agent_datatable" class="table table-hover" style="width:100%">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Contact Amount</th>
-                    <th>Deposit Amount</th>
-                    <th>Due Amount</th>
-                    <th>Discount Amount</th>
-                    <th>Return Amount</th>
-                </tr>
-            </thead>
-        </table>
-    </div>
     @endif
     <div class="card">
         <input type="hidden" id="passenger_list_url" value="{{ route('admin.accounts.passenger.list') }}">
@@ -228,6 +228,7 @@
                 $('.bootstrap4-toggle').bootstrapToggle();
             });
         }
+
         function passengerDatatable() {
             const columns = [{
                     data: 'name',
@@ -289,10 +290,13 @@
                     'rtip',
                 buttons: [{
                     extend: 'csv',
-                    text: 'Export CSV',
-                    className: 'btn btn-primary',
-                    exportOptions: typeof exportOptions !== 'undefined' && exportOptions ?
-                        exportOptions : {}
+                    text: 'Export CSV', // Button text
+                    className: 'btn btn-primary', // Add a custom class for styling
+                    // exportOptions: typeof exportOptions !== 'undefined' && exportOptions ? exportOptions : {}
+                    action: function(e, dt, button, config) {
+                        const url = "{{ route('admin.accounts.passengers.all.csv') }}";
+                        exportToCSV(url, 'passengers.csv');
+                    }
                 }]
             }).on('draw', function() {
                 $('.bootstrap4-toggle').bootstrapToggle();

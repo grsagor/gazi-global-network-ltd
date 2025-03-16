@@ -59,11 +59,11 @@
                     <tr>
                         <th>Name</th>
                         <th>Passport No.</th>
-                        <th>Country</th>
-                        <th>Company Name</th>
-                        <th>Agent Name</th>
-                        <th>AgentID</th>
-                        <th>Status</th>
+                        <th>Contact Amount</th>
+                        <th>Deposit Amount</th>
+                        <th>Due Amount</th>
+                        <th>Discount Amount</th>
+                        <th>Return Amount</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -106,24 +106,29 @@
                     name: 'passport_no'
                 },
                 {
-                    data: 'country_id',
-                    name: 'country_id'
+                    data: 'contact_amount',
+                    name: 'contact_amount',
+                    className: 'text-center',
                 },
                 {
-                    data: 'company_name',
-                    name: 'company_name'
+                    data: 'deposit_amount',
+                    name: 'deposit_amount',
+                    className: 'text-center',
                 },
                 {
-                    data: 'agent_name',
-                    name: 'agent_name'
+                    data: 'due_amount',
+                    name: 'due_amount',
+                    className: 'text-center',
                 },
                 {
-                    data: 'agent_id',
-                    name: 'agent_id'
+                    data: 'discount_amount',
+                    name: 'discount_amount',
+                    className: 'text-center',
                 },
                 {
-                    data: 'status',
-                    name: 'status'
+                    data: 'return_amount',
+                    name: 'return_amount',
+                    className: 'text-center',
                 },
                 {
                     data: 'action',
@@ -165,8 +170,11 @@
                     extend: 'csv',
                     text: 'Export CSV', // Button text
                     className: 'btn btn-primary', // Add a custom class for styling
-                    exportOptions: typeof exportOptions !== 'undefined' && exportOptions ?
-                        exportOptions : {}
+                    // exportOptions: typeof exportOptions !== 'undefined' && exportOptions ? exportOptions : {}
+                    action: function(e, dt, button, config) {
+                        const url = "{{ route('admin.accounts.passengers.all.csv', ['id' => $id]) }}";
+                        exportToCSV(url, 'passengers.csv');
+                    }
                 }]
             });
         }

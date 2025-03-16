@@ -72,6 +72,8 @@ Route::middleware('checkLogin')->group(function () {
 
             Route::get('/paid/list', 'paidList')->name('admin.accounts.paid.list');
             Route::get('/unpaid/list', 'unpaidList')->name('admin.accounts.unpaid.list');
+
+            Route::get('/passenger/all/csv', 'passengerAllCsv')->name('admin.accounts.passengers.all.csv');
         });
     });
 });

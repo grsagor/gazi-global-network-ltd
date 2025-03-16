@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\AgentSubagent;
 use App\Models\Passenger;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -258,5 +259,74 @@ class AccountController extends Controller
             })
             ->rawColumns(['name'])
             ->make(true);
+    }
+
+    public function passengerAllCsv(Request $request)
+    {
+        $user = Auth::user();
+        $query = Passenger::query();
+        if ($user->role == 2) {
+            $query->where('agent_id', $user->id);
+        }
+        if ($request->id) {
+            $query->where('agent_id', $request->id);
+        }
+        if ($user->role == 3) {
+            $agent_ids = AgentSubagent::where('sub_agent_id', $user->id)->pluck('agent_id');
+            $query->whereIn('agent_id', $agent_ids);
+        }
+        $passengers = $query->orderBy('created_at', 'desc')->get();
+
+        $passenger_count = 0;
+        $hideAmounts = Auth::user()->role == 3;
+
+        $csv_data = $passengers->map(function ($passenger) use ($passenger_count, $hideAmounts) {
+            $data = [
+                ++$passenger_count,
+                $passenger->id,
+                $passenger->name,
+                $passenger->agent_id,
+                $passenger->agent->first_name . ' ' . $passenger->agent->last_name,
+            ];
+        
+            if (!$hideAmounts) {
+                $data = array_merge($data, [
+                    $passenger->contact_amount ? intval($passenger->contact_amount) : 0,
+                    $passenger->deposit_amount ? intval($passenger->deposit_amount) : 0,
+                    $passenger->due_amount ? intval($passenger->due_amount) : 0,
+                    $passenger->discount_amount ? intval($passenger->discount_amount) : 0,
+                    $passenger->return_amount ? intval($passenger->return_amount) : 0,
+                ]);
+            }
+        
+            return $data;
+        });
+        
+        // Define CSV column headers
+        $columns = [
+            "SI",
+            "ID",
+            "Name",
+            "Agent ID",
+            "Agent Name",
+        ];
+        
+        if (!$hideAmounts) {
+            $columns = array_merge($columns, [
+                "Contract Amount",
+                "Deposit Amount",
+                "Due Amount",
+                "Discount Amount",
+                "Return Amount",
+            ]);
+        }
+
+
+        $response = [
+            'success' => true,
+            'columns' => $columns,
+            'data' => $csv_data
+        ];
+        return response()->json($response);
     }
 }

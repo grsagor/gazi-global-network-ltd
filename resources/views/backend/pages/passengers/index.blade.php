@@ -15,7 +15,12 @@
             </div>
             <div class="mb-3 col-3">
                 <label for="filter_country" class="form-label">Country</label>
-                <input type="text" class="form-control" id="filter_country" placeholder="Country">
+                <select class="form-select" id="filter_country">
+                    <option value="">Select</option>
+                    @foreach ($countries as $country)
+                        <option value="{{ $country->id }}">{{ $country->name }}</option>
+                    @endforeach
+                </select>
             </div>
             <div class="mb-3 col-3">
                 <label for="filter_company_name" class="form-label">Company Name</label>
@@ -90,7 +95,7 @@
                         <th>Country</th>
                         <th>Company Name</th>
                         <th>Agent Name</th>
-                        <th>AgentID</th>
+                        <th>Work Type</th>
                         <th>Status</th>
                         <th>Action</th>
                     </tr>
@@ -137,8 +142,8 @@
                 name: 'agent_name'
             },
             {
-                data: 'agent_id',
-                name: 'agent_id'
+                data: 'work_type',
+                name: 'work_type'
             },
             {
                 data: 'status',

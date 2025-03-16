@@ -16,7 +16,8 @@ class PassengerController extends Controller
 {
     public function index()
     {
-        return view('backend.pages.passengers.index');
+        $countries = Country::all();
+        return view('backend.pages.passengers.index', compact('countries'));
     }
     public function allCsv()
     {
@@ -40,6 +41,7 @@ class PassengerController extends Controller
             5 => "Pending",
             6 => "Ready for submission",
             7 => "Additional docs required",
+            14 => "Additional docs submitted",
             8 => "Hold",
             9 => "Permit",
             10 => "Stamping done",
@@ -48,8 +50,10 @@ class PassengerController extends Controller
             13 => "Return"
         ];
         $passenger_count = 0;
-        $csv_data = $passengers->map(function ($passenger) use ($statusMapping, $passenger_count) {
-            return [
+        $hideAmounts = Auth::user()->role == 3;
+
+        $csv_data = $passengers->map(function ($passenger) use ($statusMapping, $passenger_count, $hideAmounts) {
+            $data = [
                 ++$passenger_count,
                 $passenger->id,
                 $passenger->name,
@@ -62,20 +66,31 @@ class PassengerController extends Controller
                 $passenger->pcc_number,
                 $passenger->pcc_issue_date,
                 $passenger->pcc_upload ? env('APP_URL') . '/' . $passenger->pcc_upload : 'N/A', // link
-                $passenger->country_id,
+                $passenger->country->name,
                 $passenger->work_type,
                 $passenger->company_name,
-                $passenger->contact_amount,
-                $passenger->deposit_amount,
-                $passenger->due_amount,
-                $passenger->discount_amount,
-                $passenger->return_amount,
+            ];
+        
+            if (!$hideAmounts) {
+                $data = array_merge($data, [
+                    $passenger->contact_amount ? intval($passenger->contact_amount) : 0,
+                    $passenger->deposit_amount ? intval($passenger->deposit_amount) : 0,
+                    $passenger->due_amount ? intval($passenger->due_amount) : 0,
+                    $passenger->discount_amount ? intval($passenger->discount_amount) : 0,
+                    $passenger->return_amount ? intval($passenger->return_amount) : 0,
+                ]);
+            }
+        
+            $data = array_merge($data, [
                 $passenger->image_upload ? env('APP_URL') . '/' . $passenger->image_upload : 'N/A', // link
                 $passenger->pdf_upload ? env('APP_URL') . '/' . $passenger->pdf_upload : 'N/A', // link
                 $passenger->payment_doc_upload ? env('APP_URL') . '/' . $passenger->payment_doc_upload : 'N/A', // link
                 $statusMapping[$passenger->status] ?? 'Unknown'
-            ];
+            ]);
+        
+            return $data;
         });
+        
         // Define CSV column headers
         $columns = [
             "SI",
@@ -93,16 +108,24 @@ class PassengerController extends Controller
             "Country ID",
             "Work Type",
             "Company Name",
-            "Contract Amount",
-            "Deposit Amount",
-            "Due Amount",
-            "Discount Amount",
-            "Return Amount",
+        ];
+        
+        if (!$hideAmounts) {
+            $columns = array_merge($columns, [
+                "Contract Amount",
+                "Deposit Amount",
+                "Due Amount",
+                "Discount Amount",
+                "Return Amount",
+            ]);
+        }
+        
+        $columns = array_merge($columns, [
             "Image Upload (Link)",
             "PDF Upload (Link)",
             "Payment Document Upload (Link)",
             "Application Status"
-        ];
+        ]);
 
 
         $response = [
@@ -191,6 +214,7 @@ class PassengerController extends Controller
                 $html = '';
                 $html .= '<select data-id="' . $row->id . '" style="width: 223px;" class="form-select crudStatusBtn" aria-label="Default select example">';
                 $html .= '<option ' . ($row->status == 7 ? "selected" : '') . ' value="7">Additional docs require</option>';
+                $html .= '<option ' . ($row->status == 14 ? "selected" : '') . ' value="14">Additional docs submitted</option>';
                 $html .= '<option ' . ($row->status == 8 ? "selected" : '') . ' value="8">Hold</option>';
                 $html .= '<option ' . ($row->status == 3 ? "selected" : '') . ' value="3">Not submitted</option>';
                 $html .= '<option ' . ($row->status == 2 ? "selected" : '') . ' value="2">Onlisted</option>';
@@ -229,6 +253,9 @@ class PassengerController extends Controller
                     if ($row->status == 7) {
                         return 'Additional docs require';
                     }
+                    if ($row->status == 14) {
+                        return 'Additional docs submitted';
+                    }
                     if ($row->status == 8) {
                         return 'Hold';
                     }
@@ -248,6 +275,26 @@ class PassengerController extends Controller
                         return 'Return';
                     }
                 }
+            })
+            ->editColumn('contact_amount', function ($row) {
+                $amount = $row->contact_amount ?? 0;
+                return intval($amount);
+            })
+            ->editColumn('deposit_amount', function ($row) {
+                $amount = $row->deposit_amount ?? 0;
+                return intval($amount);
+            })
+            ->editColumn('due_amount', function ($row) {
+                $amount = $row->due_amount ?? 0;
+                return intval($amount);
+            })
+            ->editColumn('discount_amount', function ($row) {
+                $amount = $row->discount_amount ?? 0;
+                return intval($amount);
+            })
+            ->editColumn('return_amount', function ($row) {
+                $amount = $row->return_amount ?? 0;
+                return intval($amount);
             })
 
             ->addColumn('action', function ($row) {
