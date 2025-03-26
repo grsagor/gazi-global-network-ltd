@@ -280,7 +280,7 @@ class AccountController extends Controller
         $passenger_count = 0;
         $hideAmounts = Auth::user()->role == 3;
 
-        $csv_data = $passengers->map(function ($passenger) use ($passenger_count, $hideAmounts) {
+        $csv_data = $passengers->map(function ($passenger) use (&$passenger_count, $hideAmounts) {
             $data = [
                 ++$passenger_count,
                 $passenger->id,
