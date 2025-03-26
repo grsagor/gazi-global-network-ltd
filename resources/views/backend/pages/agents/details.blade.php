@@ -14,11 +14,13 @@
                             @endif Details
                         </h3>
                         <div>
-                            <button type="button" data-id="{{ $agent->id }}" class="btn btn-sm btn-primary crudEditBtn">Edit</button>
+                            <button type="button" data-id="{{ $agent->id }}"
+                                class="btn btn-sm btn-primary crudEditBtn">Edit</button>
                         </div>
                     </div>
                     <input type="hidden" id="edit_url" value="{{ route('admin.agents.edit', ['role' => $agent->role]) }}">
-                    <input type="hidden" id="update_url" value="{{ route('admin.agents.update', ['role' => $agent->role]) }}">
+                    <input type="hidden" id="update_url"
+                        value="{{ route('admin.agents.update', ['role' => $agent->role]) }}">
                     <div class="card-body">
                         @if ($agent->profile_image)
                             <div class="row mb-3">
@@ -62,10 +64,10 @@
                             <div class="col-md-6">{{ $agent->category }}</div>
                         </div>
                         @if ($agent->role == 2)
-                        <div class="row mb-3">
-                            <div class="col-md-6"><strong>Rating:</strong></div>
-                            <div class="col-md-6">{{ $agent->rating }}</div>
-                        </div>  
+                            <div class="row mb-3">
+                                <div class="col-md-6"><strong>Rating:</strong></div>
+                                <div class="col-md-6">{{ $agent->rating }}</div>
+                            </div>
                         @endif
 
                         <div class="row mb-3">
@@ -94,27 +96,27 @@
 
 
     @if ($agent->role == 2)
-    <div class="card mt-5">
-        <div class="datatable-header flex-column flex-md-row pb-0">
-            <div class="head-label text-center">
-                <h5 class="card-title mb-0">Sub-Agents</h5>
+        <div class="card mt-5">
+            <div class="datatable-header flex-column flex-md-row pb-0">
+                <div class="head-label text-center">
+                    <h5 class="card-title mb-0">Sub-Agents</h5>
+                </div>
             </div>
+            <table id="datatable_agent_subagent" class="table table-hover" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>SI</th>
+                        <th>Name</th>
+                        <th>AgentID</th>
+                        <th>Company Name</th>
+                        <th>Passport</th>
+                        <th>NID</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+            </table>
         </div>
-        <table id="datatable_agent_subagent" class="table table-hover" style="width:100%">
-            <thead>
-                <tr>
-                    <th>SI</th>
-                    <th>Name</th>
-                    <th>AgentID</th>
-                    <th>Company Name</th>
-                    <th>Passport</th>
-                    <th>NID</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-        </table>
-    </div>
     @endif
 
     <div class="card mt-5">
@@ -137,13 +139,13 @@
                 </tr>
             </thead>
         </table>
-        </div>
+    </div>
     </div>
 
-        <!-- Modal -->
-        <div class="modal fade" id="crudModal" tabindex="-1" aria-labelledby="crudModalLabel" aria-hidden="true">
+    <!-- Modal -->
+    <div class="modal fade" id="crudModal" tabindex="-1" aria-labelledby="crudModalLabel" aria-hidden="true">
 
-        </div>
+    </div>
 @endsection
 @section('js')
     <script>
@@ -221,8 +223,12 @@
                     extend: 'csv',
                     text: 'Export CSV', // Button text
                     className: 'btn btn-primary', // Add a custom class for styling
-                    exportOptions: typeof exportOptions !== 'undefined' && exportOptions ?
-                        exportOptions : {}
+                    // exportOptions: typeof exportOptions !== 'undefined' && exportOptions ? exportOptions : {}
+                    action: function(e, dt, button, config) {
+                        const url = @json(route('admin.agents.all.csv', ['agent_id' => $agent->id, 'role' => '3']));
+                        let fileName = 'sub_agents.csv';
+                        exportToCSV(url, fileName);
+                    }
                 }]
             });
         }
@@ -296,8 +302,12 @@
                     extend: 'csv',
                     text: 'Export CSV', // Button text
                     className: 'btn btn-primary', // Add a custom class for styling
-                    exportOptions: typeof exportOptions !== 'undefined' && exportOptions ?
-                        exportOptions : {}
+                    // exportOptions: typeof exportOptions !== 'undefined' && exportOptions ? exportOptions : {}
+                    action: function(e, dt, button, config) {
+                        const url =
+                            "{{ route('admin.passengers.all.csv', ['user_id' => $agent->id]) }}";
+                        exportToCSV(url, 'passengers.csv');
+                    }
                 }]
             });
         }

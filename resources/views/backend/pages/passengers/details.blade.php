@@ -209,7 +209,8 @@
                     10: "Stamping done",
                     11: "Rejected",
                     12: "Resubmit",
-                    13: "Return"
+                    13: "Return",
+                    14: "Additional docs submitted",
                 };
 
                 // Data Rows

@@ -307,7 +307,7 @@ class AgentController extends Controller
             3 => "Sub Agent",
         ];
         $user_count = 0;
-        $csv_data = $data->map(function ($user) use ($statusMapping, $roleMapping, $user_count) {
+        $csv_data = $data->map(function ($user) use ($statusMapping, $roleMapping, &$user_count) {
             $agent_id = 'N/A';
             if ($user->role == 3) {
                 $agent_id = AgentSubagent::where('sub_agent_id', $user->id)->first()->agent_id;
@@ -318,13 +318,13 @@ class AgentController extends Controller
                 $user->id,
                 $user->first_name . ' ' . $user->last_name,
                 $agent_id,
-                $user->father_name,
-                $user->nid,
-                $user->passport,
-                $user->company,
-                $user->category,
+                $user->father_name ?? 'N/A',
+                $user->nid ?? 'N/A',
+                $user->passport ?? 'N/A',
+                $user->company ?? 'N/A',
+                $user->category ?? 'N/A',
                 $user->rating,
-                $user->note,
+                $user->note ?? 'N/A',
                 $user->phone,
                 $roleMapping[$user->role],
                 $user->profile_image ? env('APP_URL') . '/' . $user->profile_image : 'N/A', // link

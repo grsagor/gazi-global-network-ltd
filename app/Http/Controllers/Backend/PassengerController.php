@@ -19,9 +19,14 @@ class PassengerController extends Controller
         $countries = Country::all();
         return view('backend.pages.passengers.index', compact('countries'));
     }
-    public function allCsv()
+    public function allCsv(Request $request)
     {
-        $user = Auth::user();
+        if ($request->user_id) {
+            $user = User::find($request->user_id);
+        } else {
+            $user = Auth::user();
+        }
+
         $query = Passenger::query();
         if ($user->role == 2) {
             $query->where('agent_id', $user->id);
