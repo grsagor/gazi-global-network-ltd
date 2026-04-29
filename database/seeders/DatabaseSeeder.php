@@ -15,11 +15,17 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(CountrySeeder::class);
 
-        User::updateOrCreate([
+        $admin = User::firstOrNew([
             'email' => 'admin@gmail.com',
-        ], [
-            'name' => 'Admin',
-            'password' => '123456',
         ]);
+
+        $admin->name = 'Admin';
+        $admin->first_name = 'Admin';
+        $admin->last_name = 'User';
+        $admin->phone = '0000000000';
+        $admin->role = 1;
+        $admin->status = 1;
+        $admin->password = '123456';
+        $admin->save();
     }
 }
