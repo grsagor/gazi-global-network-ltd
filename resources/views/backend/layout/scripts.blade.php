@@ -42,9 +42,9 @@
         });
     }
 
-    if ("{{ session()->has('success') }}") {
-        showToast('success', "{{ session()->get('success') }}")
-    } else if ("{{ session()->has('error') }}") {
-        showToast('error', "{{ session()->get('error') }}")
-    }
+    @if (session()->has('success'))
+        showToast('success', @json(session('success')))
+    @elseif (session()->has('error'))
+        showToast('error', @json(session('error')))
+    @endif
 </script>

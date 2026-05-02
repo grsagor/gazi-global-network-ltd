@@ -7,6 +7,7 @@ use App\Models\Passenger;
 use App\Models\RequiredData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class RequiredDataController extends Controller
 {
@@ -14,43 +15,61 @@ class RequiredDataController extends Controller
     {
         $required_data = RequiredData::where('passenger_id', $passenger_id)->get();
         foreach ($required_data as $item) {
-            $item->submitted_files = json_decode($item->submitted_files);
+            $item->submitted_files = $item->submitted_files
+                ? json_decode($item->submitted_files)
+                : null;
         }
         // return $required_data;
         $data = [
             'passenger_id' => $passenger_id,
             'required_data' => $required_data,
         ];
+
         return view('backend.pages.required_data.index', $data);
     }
+
     public function passengerRequireDataNew(Request $request, $passenger_id)
     {
+        $validated = $request->validate([
+            'required_text' => 'required|string|max:255',
+        ]);
+
         try {
             DB::beginTransaction();
-            $required_data = new RequiredData();
+            $required_data = new RequiredData;
             $required_data->passenger_id = $passenger_id;
-            $required_data->required_text = $request->required_text;
+            $required_data->required_text = $validated['required_text'];
+            $required_data->submitted_text = null;
+            $required_data->submitted_files = null;
             $required_data->save();
             DB::commit();
+
             return back()->with('success', 'New required data added!');
         } catch (\Throwable $th) {
             DB::rollBack();
-            return back()->with('error', 'Something went wrong!');
+            Log::error('passengerRequireDataNew failed', [
+                'passenger_id' => $passenger_id,
+                'message' => $th->getMessage(),
+                'exception' => $th,
+            ]);
+
+            return back()->with('error', $th->getMessage());
         }
     }
+
     public function passengerRequireDataSubmit(Request $request, $data_id)
     {
         $rules = [
-            'submitted_text_' . $data_id => 'required|string',
-            'submitted_files_' . $data_id => 'required|array',
-            'submitted_files_' . $data_id . '.*' => 'file|mimes:jpg,png,pdf|max:20048', // Adjust file rules as needed
+            'submitted_text_'.$data_id => 'required|string',
+            'submitted_files_'.$data_id => 'required|array',
+            'submitted_files_'.$data_id.'.*' => 'file|mimes:jpg,png,pdf|max:20048', // Adjust file rules as needed
         ];
 
         $messages = [
-            'submitted_text_' . $data_id . '.required' => 'The text field is required.',
-            'submitted_files_' . $data_id . '.required' => 'Please upload at least one file.',
-            'submitted_files_' . $data_id . '.*.mimes' => 'Only JPG, PNG, and PDF files are allowed.',
-            'submitted_files_' . $data_id . '.*.max' => 'Each file must not exceed 2MB.',
+            'submitted_text_'.$data_id.'.required' => 'The text field is required.',
+            'submitted_files_'.$data_id.'.required' => 'Please upload at least one file.',
+            'submitted_files_'.$data_id.'.*.mimes' => 'Only JPG, PNG, and PDF files are allowed.',
+            'submitted_files_'.$data_id.'.*.max' => 'Each file must not exceed 2MB.',
         ];
 
         $validated = $request->validate($rules, $messages);
@@ -63,23 +82,23 @@ class RequiredDataController extends Controller
             $passenger = Passenger::find($passenger_id);
             $passenger->status = 14;
             $passenger->save();
-            $required_data->submitted_text = $validated['submitted_text_' . $data_id] ? $validated['submitted_text_' . $data_id] : $required_data->submitted_text;
+            $required_data->submitted_text = $validated['submitted_text_'.$data_id] ? $validated['submitted_text_'.$data_id] : $required_data->submitted_text;
 
             $files = [];
-            if ($request->hasFile('submitted_files_' . $data_id)) {
-                foreach ($request->file('submitted_files_' . $data_id) as $file) {
+            if ($request->hasFile('submitted_files_'.$data_id)) {
+                foreach ($request->file('submitted_files_'.$data_id) as $file) {
                     $destinationPath = public_path('uploads/required-data');
-                    $fileName = time() . '_' . $file->getClientOriginalName();
+                    $fileName = time().'_'.$file->getClientOriginalName();
                     $file->move($destinationPath, $fileName);
 
                     // Mimetype
-                    $filePath = $destinationPath . '/' . $fileName;
+                    $filePath = $destinationPath.'/'.$fileName;
                     $finfo = new \finfo(FILEINFO_MIME_TYPE);
                     $mimeType = $finfo->file($filePath);
 
                     $files[] = [
                         'type' => $mimeType,
-                        'path' => 'uploads/required-data/' . $fileName,
+                        'path' => 'uploads/required-data/'.$fileName,
                         'file_name' => $fileName,
                     ];
                 }
@@ -99,9 +118,11 @@ class RequiredDataController extends Controller
             $required_data->save();
 
             DB::commit();
+
             return back()->with('success', 'New required data added!');
         } catch (\Throwable $th) {
             DB::rollBack();
+
             // return back()->with('error', 'Something went wrong!');
             return back()->with('error', $th->getMessage());
         }
